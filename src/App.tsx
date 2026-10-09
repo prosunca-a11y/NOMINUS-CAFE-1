@@ -54,6 +54,7 @@ import { DeepResearchAndUxReportView } from './components/DeepResearchAndUxRepor
 import { SecurityDatabaseCenterView } from './components/SecurityDatabaseCenterView';
 import { AgricolaOniBankAuditSheetView } from './components/AgricolaOniBankAuditSheetView';
 import { AgricolaOniBanescoResponseLetterView } from './components/AgricolaOniBanescoResponseLetterView';
+import { AgricolaOniBanescoOnePageLetterView } from './components/AgricolaOniBanescoOnePageLetterView';
 import {
   Landmark,
   FileCheck2,
@@ -72,6 +73,7 @@ import {
 
 type ActiveModule =
   | 'carta-explicativa-banesco-2026'
+  | 'carta-ejecutiva-1pagina-banesco-2026'
   | 'contabilidad-banesco-2026'
   | 'comprobantes-anticipos-2026'
   | 'comprobantes-traspasos-2026'
@@ -87,7 +89,7 @@ type ActiveModule =
   | 'seguridad-bd';
 
 export default function App() {
-  const [activeModule, setActiveModule] = useState<ActiveModule>('carta-explicativa-banesco-2026');
+  const [activeModule, setActiveModule] = useState<ActiveModule>('carta-ejecutiva-1pagina-banesco-2026');
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [authReady, setAuthReady] = useState<boolean>(false);
   const [isSyncingFirestore, setIsSyncingFirestore] = useState<boolean>(false);
@@ -836,14 +838,25 @@ export default function App() {
   }[] = [
     {
       id: 'carta-explicativa-banesco-2026',
-      numero: '00',
-      tituloCorto: 'Carta Respuesta Banesco',
-      subtitulo: 'EEFF USD 116k vs BBU USD 2.78M',
+      numero: '00-A',
+      tituloCorto: 'Carta Extensa Banesco',
+      subtitulo: 'Modelo 1: Detallada + Anexos CPC',
       pastelBg: 'bg-[#E0F2FE]/90 hover:bg-[#E0F2FE]',
       pastelActiveBg: 'bg-[#E0F2FE] ring-2 ring-[#0369A1]',
       pastelBorder: 'border-[#38BDF8]',
       textAccent: 'text-[#0C4A6E]',
       icon: <FileText className="w-5 h-5 text-[#0369A1]" />,
+    },
+    {
+      id: 'carta-ejecutiva-1pagina-banesco-2026',
+      numero: '00-B',
+      tituloCorto: 'Carta 1 Pág. Banesco',
+      subtitulo: 'Modelo 2: Resumen Ejecutivo 1 Hoja',
+      pastelBg: 'bg-[#DCFCE7]/95 hover:bg-[#DCFCE7]',
+      pastelActiveBg: 'bg-[#DCFCE7] ring-2 ring-[#15803D]',
+      pastelBorder: 'border-[#4ADE80]',
+      textAccent: 'text-[#14532D]',
+      icon: <FileCheck2 className="w-5 h-5 text-[#15803D]" />,
     },
     {
       id: 'contabilidad-banesco-2026',
@@ -1006,7 +1019,17 @@ export default function App() {
                   : ''
               }`}
             >
-              Carta Respuesta Banesco
+              Carta Extensa (Mod. 1)
+            </button>
+            <button
+              onClick={() => setActiveModule('carta-ejecutiva-1pagina-banesco-2026')}
+              className={`hover:text-[#1C1917] hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                activeModule === 'carta-ejecutiva-1pagina-banesco-2026'
+                  ? 'text-[#15803D] font-bold underline'
+                  : ''
+              }`}
+            >
+              Carta 1 Página (Mod. 2)
             </button>
             <button
               onClick={() => setActiveModule('contabilidad-banesco-2026')}
@@ -1210,6 +1233,13 @@ export default function App() {
         <section>
           {activeModule === 'carta-explicativa-banesco-2026' && (
             <AgricolaOniBanescoResponseLetterView
+              companies={companies}
+              onNavigateToModule={(modId) => setActiveModule(modId as ActiveModule)}
+            />
+          )}
+
+          {activeModule === 'carta-ejecutiva-1pagina-banesco-2026' && (
+            <AgricolaOniBanescoOnePageLetterView
               companies={companies}
               onNavigateToModule={(modId) => setActiveModule(modId as ActiveModule)}
             />

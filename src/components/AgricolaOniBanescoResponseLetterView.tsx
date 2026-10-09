@@ -1244,6 +1244,35 @@ Contador Público en Ejercicio Independiente / Asesor Contable VEN-NIF
           </div>
         )}
 
+        {/* SELECTOR ENTRE OPCIÓN 1 (CARTA EXTENSA) Y OPCIÓN 2 (CARTA EJECUTIVA 1 PÁGINA) */}
+        {onNavigateToModule && (
+          <div className="bg-white/95 border border-[#D6D3D1] rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="space-y-0.5">
+              <div className="text-xs font-bold text-[#1C1917]">
+                Estás viendo la Opción 1: Modelo de Carta Extensa Detallada (con desglose completo de anexos y papeles de trabajo CPC).
+              </div>
+              <div className="text-[11px] text-[#57534E]">
+                También tienes disponible en otra página de la aplicación la <strong>Opción 2: Carta Ejecutiva Resumida en 1 Sola Página</strong> lista para entregar al banco.
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 shrink-0">
+              <span className="px-3.5 py-2 bg-[#0369A1] text-white text-xs font-bold rounded-xl">
+                Activa Opción 1: Carta Extensa Detallada
+              </span>
+              <button
+                type="button"
+                onClick={() =>
+                  onNavigateToModule('carta-ejecutiva-1pagina-banesco-2026')
+                }
+                className="px-3.5 py-2 bg-[#DCFCE7] border border-[#22C55E] text-[#14532D] text-xs font-bold rounded-xl hover:bg-[#BBF7D0] cursor-pointer"
+              >
+                Ir a Opción 2: Carta Ejecutiva de 1 Sola Página →
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* CAMPOS EDITABLES PARA PERSONALIZAR ANTES DE DESCARGAR EN WORD O PDF */}
         <div className="bg-white/95 border border-[#D6D3D1] rounded-2xl p-4 space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
