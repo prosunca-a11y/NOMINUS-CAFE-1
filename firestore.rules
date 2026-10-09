@@ -1,0 +1,452 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Global Safety Net (Default-Deny Catch-All)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 2. Hardened Global Primitives
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isAdmin() {
+      return isVerifiedUser() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        request.auth.token.email == 'sac1contable@gmail.com'
+      );
+    }
+
+    function isParentCompanyOwner(companyId) {
+      return isValidId(companyId) &&
+        exists(/databases/$(database)/documents/companies/$(companyId)) &&
+        get(/databases/$(database)/documents/companies/$(companyId)).data.ownerId == request.auth.uid;
+    }
+
+    // 3. Validation Blueprints (Anti-Update-Gap)
+
+    function isValidCompanyProfile(data) {
+      return data.keys().hasAll([
+        'id', 'ownerId', 'codigoCorto', 'razonSocial', 'rif',
+        'domicilioFiscal', 'registroMercantil', 'representanteLegal',
+        'cuentaBanescoVES', 'cuentaBanescoUSD', 'cupoMensualMesaCambioUSD',
+        'sucursalPrincipal', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'ownerId', 'codigoCorto', 'razonSocial', 'rif',
+        'domicilioFiscal', 'registroMercantil', 'representanteLegal',
+        'cuentaBanescoVES', 'cuentaBanescoUSD', 'cupoMensualMesaCambioUSD',
+        'sucursalPrincipal', 'createdAt', 'updatedAt'
+      ]) &&
+      isValidId(data.id) &&
+      isValidId(data.ownerId) &&
+      data.ownerId == request.auth.uid &&
+      data.codigoCorto is string && data.codigoCorto.size() >= 1 && data.codigoCorto.size() <= 40 &&
+      data.razonSocial is string && data.razonSocial.size() >= 2 && data.razonSocial.size() <= 200 &&
+      data.rif is string && data.rif.size() >= 5 && data.rif.size() <= 30 &&
+      data.domicilioFiscal is string && data.domicilioFiscal.size() >= 2 && data.domicilioFiscal.size() <= 400 &&
+      data.registroMercantil is string && data.registroMercantil.size() >= 2 && data.registroMercantil.size() <= 300 &&
+      data.representanteLegal is string && data.representanteLegal.size() >= 2 && data.representanteLegal.size() <= 160 &&
+      data.cuentaBanescoVES is string && data.cuentaBanescoVES.size() >= 10 && data.cuentaBanescoVES.size() <= 60 &&
+      data.cuentaBanescoUSD is string && data.cuentaBanescoUSD.size() >= 10 && data.cuentaBanescoUSD.size() <= 120 &&
+      data.cupoMensualMesaCambioUSD is number && data.cupoMensualMesaCambioUSD >= 0 && data.cupoMensualMesaCambioUSD <= 100000000 &&
+      data.sucursalPrincipal is string && data.sucursalPrincipal.size() >= 2 && data.sucursalPrincipal.size() <= 160 &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidCashTrailPart1(data) {
+      return data.keys().hasAll([
+          'id', 'ownerId', 'empresaId', 'uidUnico', 'codigoOperacion',
+          'fechaAnticipo', 'horaTransferencia', 'clienteNombre', 'clienteRif',
+          'clienteTipoCuenta', 'bancoOrigen', 'numeroCuentaOrigen',
+          'cuentaBanescoReceptora', 'referenciaBanesco', 'montoAnticipoVES',
+          'propositoAnticipo', 'tasaBcvAnticipo', 'fechaMesaCambio',
+          'horaMesaCambio', 'codigoPactoBanesco', 'tasaMesaCambio',
+          'comisionBanescoVES', 'montoAdjudicadoUSD', 'cuentaBanescoDivisas',
+          'fechaCompraExterior', 'referenciaPagoExterior', 'proveedorExterior',
+          'origenCafe', 'variedadCafe', 'quintalesComprados', 'costoCafeUSD',
+          'fleteInternacionalUSD', 'estadoLogistico', 'permisoInsai',
+          'numeroFacturaSeniat', 'fechaFacturaSeniat', 'tasaBcvFacturacion',
+          'subtotalCafeVES', 'subtotalFleteVES', 'ivaFleteVES',
+          'retencionIslrFleteVES', 'diferencialCambiarioVES', 'estadoContable',
+          'etapaTrazabilidad', 'reciboAnticipoNro', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'id', 'ownerId', 'empresaId', 'uidUnico', 'codigoOperacion',
+          'fechaAnticipo', 'horaTransferencia', 'clienteNombre', 'clienteRif',
+          'clienteTipoCuenta', 'bancoOrigen', 'numeroCuentaOrigen',
+          'cuentaBanescoReceptora', 'referenciaBanesco', 'montoAnticipoVES',
+          'propositoAnticipo', 'tasaBcvAnticipo', 'fechaMesaCambio',
+          'horaMesaCambio', 'codigoPactoBanesco', 'tasaMesaCambio',
+          'comisionBanescoVES', 'montoAdjudicadoUSD', 'cuentaBanescoDivisas',
+          'fechaCompraExterior', 'referenciaPagoExterior', 'proveedorExterior',
+          'origenCafe', 'variedadCafe', 'quintalesComprados', 'costoCafeUSD',
+          'fleteInternacionalUSD', 'estadoLogistico', 'permisoInsai',
+          'numeroFacturaSeniat', 'fechaFacturaSeniat', 'tasaBcvFacturacion',
+          'subtotalCafeVES', 'subtotalFleteVES', 'ivaFleteVES',
+          'retencionIslrFleteVES', 'diferencialCambiarioVES', 'estadoContable',
+          'etapaTrazabilidad', 'reciboAnticipoNro', 'createdAt', 'updatedAt'
+        ]) &&
+        isValidId(data.id) &&
+        isValidId(data.ownerId) &&
+        data.ownerId == request.auth.uid &&
+        isValidId(data.empresaId) &&
+        data.uidUnico is string && data.uidUnico.size() >= 5 && data.uidUnico.size() <= 80 &&
+        data.codigoOperacion is string && data.codigoOperacion.size() >= 3 && data.codigoOperacion.size() <= 60 &&
+        data.fechaAnticipo is string && data.fechaAnticipo.size() >= 8 && data.fechaAnticipo.size() <= 30 &&
+        data.horaTransferencia is string && data.horaTransferencia.size() >= 4 && data.horaTransferencia.size() <= 20 &&
+        data.clienteNombre is string && data.clienteNombre.size() >= 2 && data.clienteNombre.size() <= 200 &&
+        data.clienteRif is string && data.clienteRif.size() >= 4 && data.clienteRif.size() <= 30 &&
+        data.clienteTipoCuenta is string && data.clienteTipoCuenta.size() >= 5 && data.clienteTipoCuenta.size() <= 60 &&
+        data.bancoOrigen is string && data.bancoOrigen.size() >= 2 && data.bancoOrigen.size() <= 120 &&
+        data.numeroCuentaOrigen is string && data.numeroCuentaOrigen.size() >= 10 && data.numeroCuentaOrigen.size() <= 60 &&
+        data.cuentaBanescoReceptora is string && data.cuentaBanescoReceptora.size() >= 10 && data.cuentaBanescoReceptora.size() <= 60 &&
+        data.referenciaBanesco is string && data.referenciaBanesco.size() >= 3 && data.referenciaBanesco.size() <= 60 &&
+        data.montoAnticipoVES is number && data.montoAnticipoVES > 0 && data.montoAnticipoVES <= 999999999999 &&
+        data.propositoAnticipo is string && data.propositoAnticipo.size() >= 5 && data.propositoAnticipo.size() <= 500;
+    }
+
+    function isValidCashTrailPart2(data) {
+      return data.tasaBcvAnticipo is number && data.tasaBcvAnticipo > 0 &&
+        data.fechaMesaCambio is string && data.fechaMesaCambio.size() >= 4 && data.fechaMesaCambio.size() <= 30 &&
+        data.horaMesaCambio is string && data.horaMesaCambio.size() >= 4 && data.horaMesaCambio.size() <= 20 &&
+        data.codigoPactoBanesco is string && data.codigoPactoBanesco.size() >= 3 && data.codigoPactoBanesco.size() <= 60 &&
+        data.tasaMesaCambio is number && data.tasaMesaCambio > 0 &&
+        data.comisionBanescoVES is number && data.comisionBanescoVES >= 0 &&
+        data.montoAdjudicadoUSD is number && data.montoAdjudicadoUSD >= 0 &&
+        data.cuentaBanescoDivisas is string && data.cuentaBanescoDivisas.size() >= 5 && data.cuentaBanescoDivisas.size() <= 120 &&
+        data.fechaCompraExterior is string && data.fechaCompraExterior.size() >= 4 && data.fechaCompraExterior.size() <= 30 &&
+        data.referenciaPagoExterior is string && data.referenciaPagoExterior.size() >= 3 && data.referenciaPagoExterior.size() <= 80 &&
+        data.proveedorExterior is string && data.proveedorExterior.size() >= 2 && data.proveedorExterior.size() <= 200 &&
+        data.origenCafe is string && data.origenCafe.size() >= 2 && data.origenCafe.size() <= 200 &&
+        data.variedadCafe is string && data.variedadCafe.size() >= 3 && data.variedadCafe.size() <= 80 &&
+        data.quintalesComprados is number && data.quintalesComprados >= 1 && data.quintalesComprados <= 100000 &&
+        data.costoCafeUSD is number && data.costoCafeUSD >= 0 &&
+        data.fleteInternacionalUSD is number && data.fleteInternacionalUSD >= 0 &&
+        data.estadoLogistico is string && data.estadoLogistico.size() >= 3 && data.estadoLogistico.size() <= 100 &&
+        data.permisoInsai is string && data.permisoInsai.size() >= 2 && data.permisoInsai.size() <= 120 &&
+        data.numeroFacturaSeniat is string && data.numeroFacturaSeniat.size() >= 2 && data.numeroFacturaSeniat.size() <= 80 &&
+        data.fechaFacturaSeniat is string && data.fechaFacturaSeniat.size() >= 4 && data.fechaFacturaSeniat.size() <= 30 &&
+        data.tasaBcvFacturacion is number && data.tasaBcvFacturacion > 0 &&
+        data.subtotalCafeVES is number && data.subtotalCafeVES >= 0 &&
+        data.subtotalFleteVES is number && data.subtotalFleteVES >= 0 &&
+        data.ivaFleteVES is number && data.ivaFleteVES >= 0 &&
+        data.retencionIslrFleteVES is number && data.retencionIslrFleteVES >= 0 &&
+        data.diferencialCambiarioVES is number &&
+        data.estadoContable is string && data.estadoContable.size() >= 5 && data.estadoContable.size() <= 80 &&
+        data.etapaTrazabilidad is number && data.etapaTrazabilidad >= 1 && data.etapaTrazabilidad <= 4 &&
+        data.reciboAnticipoNro is string && data.reciboAnticipoNro.size() >= 3 && data.reciboAnticipoNro.size() <= 60 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidCashTrailOperation(data) {
+      return isValidCashTrailPart1(data) && isValidCashTrailPart2(data);
+    }
+
+    function isValidVigilanteWorker(data) {
+      return data.keys().hasAll([
+        'id', 'ownerId', 'empresaId', 'nombre', 'cedula', 'cargo',
+        'ubicacionFinca', 'turnoModalidad', 'salarioBasicoMensualVES',
+        'diasTrabajadosMes', 'horasNocturnasMes', 'horasExtrasMes',
+        'domingosFeriadosTrabajados', 'cestaticketUSD',
+        'bonoProductividadResguardoUSD', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'ownerId', 'empresaId', 'nombre', 'cedula', 'cargo',
+        'ubicacionFinca', 'turnoModalidad', 'salarioBasicoMensualVES',
+        'diasTrabajadosMes', 'horasNocturnasMes', 'horasExtrasMes',
+        'domingosFeriadosTrabajados', 'cestaticketUSD',
+        'bonoProductividadResguardoUSD', 'createdAt', 'updatedAt'
+      ]) &&
+      isValidId(data.id) &&
+      isValidId(data.ownerId) &&
+      data.ownerId == request.auth.uid &&
+      isValidId(data.empresaId) &&
+      data.nombre is string && data.nombre.size() >= 2 && data.nombre.size() <= 160 &&
+      data.cedula is string && data.cedula.size() >= 4 && data.cedula.size() <= 30 &&
+      data.cargo is string && data.cargo.size() >= 2 && data.cargo.size() <= 120 &&
+      data.ubicacionFinca is string && data.ubicacionFinca.size() >= 2 && data.ubicacionFinca.size() <= 200 &&
+      data.turnoModalidad is string && data.turnoModalidad.size() >= 5 && data.turnoModalidad.size() <= 80 &&
+      data.salarioBasicoMensualVES is number && data.salarioBasicoMensualVES >= 0 && data.salarioBasicoMensualVES <= 10000000 &&
+      data.diasTrabajadosMes is number && data.diasTrabajadosMes >= 0 && data.diasTrabajadosMes <= 31 &&
+      data.horasNocturnasMes is number && data.horasNocturnasMes >= 0 && data.horasNocturnasMes <= 400 &&
+      data.horasExtrasMes is number && data.horasExtrasMes >= 0 && data.horasExtrasMes <= 200 &&
+      data.domingosFeriadosTrabajados is number && data.domingosFeriadosTrabajados >= 0 && data.domingosFeriadosTrabajados <= 15 &&
+      data.cestaticketUSD is number && data.cestaticketUSD >= 0 && data.cestaticketUSD <= 1000 &&
+      data.bonoProductividadResguardoUSD is number && data.bonoProductividadResguardoUSD >= 0 && data.bonoProductividadResguardoUSD <= 10000 &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidSecurityAuditLog(data) {
+      return data.keys().hasAll([
+        'id', 'ownerId', 'accion', 'entidadTipo', 'entidadId', 'detalle', 'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'ownerId', 'accion', 'entidadTipo', 'entidadId', 'detalle', 'createdAt'
+      ]) &&
+      isValidId(data.id) &&
+      isValidId(data.ownerId) &&
+      data.ownerId == request.auth.uid &&
+      data.accion is string && data.accion.size() >= 2 && data.accion.size() <= 120 &&
+      (data.entidadTipo == 'EMPRESA' || data.entidadTipo == 'ANTICIPO_BANESCO' || data.entidadTipo == 'VIGILANTE_LOTTT' || data.entidadTipo == 'SISTEMA_AUTH' || data.entidadTipo == 'TASA_BCV' || data.entidadTipo == 'COMPROBANTE_SENIAT') &&
+      isValidId(data.entidadId) &&
+      data.detalle is string && data.detalle.size() >= 2 && data.detalle.size() <= 500 &&
+      data.createdAt is timestamp;
+    }
+
+    function isValidBcvDailyRate(data) {
+      return data.keys().hasAll([
+        'id', 'ownerId', 'fecha', 'tasaCompraVES', 'tasaVentaVES', 'fuente', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'ownerId', 'fecha', 'tasaCompraVES', 'tasaVentaVES', 'fuente', 'createdAt', 'updatedAt'
+      ]) &&
+      isValidId(data.id) &&
+      isValidId(data.ownerId) &&
+      data.ownerId == request.auth.uid &&
+      data.fecha is string && data.fecha.size() >= 8 && data.fecha.size() <= 20 &&
+      data.tasaCompraVES is number && data.tasaCompraVES > 0 && data.tasaCompraVES <= 1000000 &&
+      data.tasaVentaVES is number && data.tasaVentaVES > 0 && data.tasaVentaVES <= 1000000 &&
+      data.fuente is string && data.fuente.size() >= 2 && data.fuente.size() <= 160 &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidSignedVoucherRecord(data) {
+      return data.keys().hasAll([
+        'id', 'ownerId', 'voucherId', 'numeroComprobante', 'hojaDestino',
+        'mes', 'fechaEmision', 'montoOperacionBs', 'montoEquivalenteUSD',
+        'estadoFirmaSello', 'archivoFirmadoNombre', 'archivoFirmadoFechaCarga',
+        'archivoFirmadoHashSha256', 'firmadoPorRepresentante',
+        'firmadoPorContadorCpc', 'selloAgenciaBanesco',
+        'expedienteSeniatNro', 'observacionesAuditor', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'ownerId', 'voucherId', 'numeroComprobante', 'hojaDestino',
+        'mes', 'fechaEmision', 'montoOperacionBs', 'montoEquivalenteUSD',
+        'estadoFirmaSello', 'archivoFirmadoNombre', 'archivoFirmadoFechaCarga',
+        'archivoFirmadoHashSha256', 'firmadoPorRepresentante',
+        'firmadoPorContadorCpc', 'selloAgenciaBanesco',
+        'expedienteSeniatNro', 'observacionesAuditor', 'createdAt', 'updatedAt'
+      ]) &&
+      isValidId(data.id) &&
+      isValidId(data.ownerId) &&
+      data.ownerId == request.auth.uid &&
+      data.voucherId is string && data.voucherId.size() >= 2 && data.voucherId.size() <= 80 &&
+      data.numeroComprobante is string && data.numeroComprobante.size() >= 3 && data.numeroComprobante.size() <= 80 &&
+      data.hojaDestino is string && data.hojaDestino.size() >= 3 && data.hojaDestino.size() <= 60 &&
+      data.mes is string && data.mes.size() >= 2 && data.mes.size() <= 10 &&
+      data.fechaEmision is string && data.fechaEmision.size() >= 6 && data.fechaEmision.size() <= 20 &&
+      data.montoOperacionBs is number && data.montoOperacionBs >= 0 && data.montoOperacionBs <= 999999999999 &&
+      data.montoEquivalenteUSD is number && data.montoEquivalenteUSD >= 0 && data.montoEquivalenteUSD <= 999999999999 &&
+      (data.estadoFirmaSello == 'EMITIDO_PENDIENTE_FIRMA' || data.estadoFirmaSello == 'IMPRESO_EN_TRAMITE_FIRMA' || data.estadoFirmaSello == 'FIRMADO_Y_SELLADO_DIGITALIZADO' || data.estadoFirmaSello == 'VERIFICADO_AUDITORIA_SENIAT') &&
+      data.archivoFirmadoNombre is string && data.archivoFirmadoNombre.size() >= 1 && data.archivoFirmadoNombre.size() <= 200 &&
+      data.archivoFirmadoFechaCarga is string && data.archivoFirmadoFechaCarga.size() >= 4 && data.archivoFirmadoFechaCarga.size() <= 40 &&
+      data.archivoFirmadoHashSha256 is string && data.archivoFirmadoHashSha256.size() >= 6 && data.archivoFirmadoHashSha256.size() <= 128 &&
+      data.firmadoPorRepresentante is string && data.firmadoPorRepresentante.size() >= 2 && data.firmadoPorRepresentante.size() <= 160 &&
+      data.firmadoPorContadorCpc is string && data.firmadoPorContadorCpc.size() >= 2 && data.firmadoPorContadorCpc.size() <= 160 &&
+      data.selloAgenciaBanesco is string && data.selloAgenciaBanesco.size() >= 2 && data.selloAgenciaBanesco.size() <= 160 &&
+      data.expedienteSeniatNro is string && data.expedienteSeniatNro.size() >= 2 && data.expedienteSeniatNro.size() <= 100 &&
+      data.observacionesAuditor is string && data.observacionesAuditor.size() >= 2 && data.observacionesAuditor.size() <= 500 &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    // 4. Collection Match Blocks
+
+    // G. /signedVouchers/{voucherDocId}
+    match /signedVouchers/{voucherDocId} {
+      allow get: if isVerifiedUser() && isValidId(voucherDocId) && (existing().ownerId == request.auth.uid || isAdmin());
+      allow list: if isVerifiedUser() && existing().ownerId == request.auth.uid;
+
+      allow create: if isVerifiedUser() &&
+        isValidId(voucherDocId) &&
+        incoming().id == voucherDocId &&
+        isValidSignedVoucherRecord(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+
+      allow update: if isVerifiedUser() &&
+        isValidId(voucherDocId) &&
+        isValidSignedVoucherRecord(incoming()) &&
+        (existing().ownerId == request.auth.uid || isAdmin()) &&
+        incoming().id == existing().id &&
+        incoming().ownerId == existing().ownerId &&
+        (incoming().createdAt == existing().createdAt || incoming().createdAt == request.time) &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'voucherId', 'numeroComprobante', 'hojaDestino', 'mes',
+          'fechaEmision', 'montoOperacionBs', 'montoEquivalenteUSD',
+          'estadoFirmaSello', 'archivoFirmadoNombre', 'archivoFirmadoFechaCarga',
+          'archivoFirmadoHashSha256', 'firmadoPorRepresentante',
+          'firmadoPorContadorCpc', 'selloAgenciaBanesco',
+          'expedienteSeniatNro', 'observacionesAuditor', 'createdAt', 'updatedAt'
+        ]);
+
+      allow delete: if isVerifiedUser() && isValidId(voucherDocId) && (existing().ownerId == request.auth.uid || isAdmin());
+    }
+
+    // F. /bcvRates/{rateId}
+    match /bcvRates/{rateId} {
+      allow get: if isVerifiedUser() && isValidId(rateId) && (existing().ownerId == request.auth.uid || isAdmin());
+      allow list: if isVerifiedUser() && existing().ownerId == request.auth.uid;
+
+      allow create: if isVerifiedUser() &&
+        isValidId(rateId) &&
+        incoming().id == rateId &&
+        isValidBcvDailyRate(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+
+      allow update: if isVerifiedUser() &&
+        isValidId(rateId) &&
+        isValidBcvDailyRate(incoming()) &&
+        (existing().ownerId == request.auth.uid || isAdmin()) &&
+        incoming().id == existing().id &&
+        incoming().ownerId == existing().ownerId &&
+        (incoming().createdAt == existing().createdAt || incoming().createdAt == request.time) &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'fecha', 'tasaCompraVES', 'tasaVentaVES', 'fuente', 'createdAt', 'updatedAt'
+        ]);
+
+      allow delete: if isVerifiedUser() && isValidId(rateId) && (existing().ownerId == request.auth.uid || isAdmin());
+    }
+
+    // A. /admins/{adminUid}
+    match /admins/{adminUid} {
+      allow get: if isSignedIn() && isValidId(adminUid) && request.auth.uid == adminUid;
+      allow list, create, update, delete: if false;
+    }
+
+    // B. /companies/{companyId}
+    match /companies/{companyId} {
+      allow get: if isVerifiedUser() && isValidId(companyId) && (existing().ownerId == request.auth.uid || isAdmin());
+      allow list: if isVerifiedUser() && existing().ownerId == request.auth.uid;
+
+      allow create: if isVerifiedUser() &&
+        isValidId(companyId) &&
+        incoming().id == companyId &&
+        isValidCompanyProfile(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+
+      allow update: if isVerifiedUser() &&
+        isValidId(companyId) &&
+        isValidCompanyProfile(incoming()) &&
+        (existing().ownerId == request.auth.uid || isAdmin()) &&
+        incoming().id == existing().id &&
+        incoming().ownerId == existing().ownerId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'codigoCorto', 'razonSocial', 'rif', 'domicilioFiscal',
+          'registroMercantil', 'representanteLegal', 'cuentaBanescoVES',
+          'cuentaBanescoUSD', 'cupoMensualMesaCambioUSD',
+          'sucursalPrincipal', 'updatedAt'
+        ]);
+
+      allow delete: if isVerifiedUser() && isValidId(companyId) && (existing().ownerId == request.auth.uid || isAdmin());
+    }
+
+    // C. /operations/{operationId}
+    match /operations/{operationId} {
+      allow get: if isVerifiedUser() && isValidId(operationId) && (existing().ownerId == request.auth.uid || isAdmin());
+      allow list: if isVerifiedUser() && existing().ownerId == request.auth.uid;
+
+      allow create: if isVerifiedUser() &&
+        isValidId(operationId) &&
+        incoming().id == operationId &&
+        isValidCashTrailOperation(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        isParentCompanyOwner(incoming().empresaId);
+
+      allow update: if isVerifiedUser() &&
+        isValidId(operationId) &&
+        isValidCashTrailOperation(incoming()) &&
+        (existing().ownerId == request.auth.uid || isAdmin()) &&
+        incoming().id == existing().id &&
+        incoming().ownerId == existing().ownerId &&
+        incoming().empresaId == existing().empresaId &&
+        incoming().uidUnico == existing().uidUnico &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (existing().estadoContable != 'Cerrado y Declarado SENIAT' || isAdmin()) &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'etapaTrazabilidad', 'estadoContable', 'estadoLogistico',
+          'numeroFacturaSeniat', 'fechaFacturaSeniat', 'permisoInsai',
+          'referenciaPagoExterior', 'updatedAt'
+        ]);
+
+      allow delete: if isVerifiedUser() && isValidId(operationId) && (existing().ownerId == request.auth.uid || isAdmin());
+    }
+
+    // D. /vigilantes/{vigilanteId}
+    match /vigilantes/{vigilanteId} {
+      allow get: if isVerifiedUser() && isValidId(vigilanteId) && (existing().ownerId == request.auth.uid || isAdmin());
+      allow list: if isVerifiedUser() && existing().ownerId == request.auth.uid;
+
+      allow create: if isVerifiedUser() &&
+        isValidId(vigilanteId) &&
+        incoming().id == vigilanteId &&
+        isValidVigilanteWorker(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        isParentCompanyOwner(incoming().empresaId);
+
+      allow update: if isVerifiedUser() &&
+        isValidId(vigilanteId) &&
+        isValidVigilanteWorker(incoming()) &&
+        (existing().ownerId == request.auth.uid || isAdmin()) &&
+        incoming().id == existing().id &&
+        incoming().ownerId == existing().ownerId &&
+        incoming().empresaId == existing().empresaId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'nombre', 'cedula', 'cargo', 'ubicacionFinca', 'turnoModalidad',
+          'salarioBasicoMensualVES', 'diasTrabajadosMes', 'horasNocturnasMes',
+          'horasExtrasMes', 'domingosFeriadosTrabajados', 'cestaticketUSD',
+          'bonoProductividadResguardoUSD', 'updatedAt'
+        ]);
+
+      allow delete: if isVerifiedUser() && isValidId(vigilanteId) && (existing().ownerId == request.auth.uid || isAdmin());
+    }
+
+    // E. /auditLogs/{logId} (Append-only immutable audit log)
+    match /auditLogs/{logId} {
+      allow get: if isVerifiedUser() && isValidId(logId) && (existing().ownerId == request.auth.uid || isAdmin());
+      allow list: if isVerifiedUser() && existing().ownerId == request.auth.uid;
+
+      allow create: if isVerifiedUser() &&
+        isValidId(logId) &&
+        incoming().id == logId &&
+        isValidSecurityAuditLog(incoming()) &&
+        incoming().createdAt == request.time;
+
+      allow update, delete: if false;
+    }
+  }
+}

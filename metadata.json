@@ -1,0 +1,6 @@
+{
+  "name": "NOMINUS CAFÉ 1",
+  "description": "Sistema integral de trazabilidad de efectivo, blindaje cambiario Banesco, contabilidad de anticipos en ventas, logística de importación de café Colombia-Venezuela y cumplimiento fiscal SENIAT/SUDEBAN.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
