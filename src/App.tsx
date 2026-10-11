@@ -69,6 +69,7 @@ import {
   DollarSign,
   FolderArchive,
   FileText,
+  Layers,
 } from 'lucide-react';
 
 type ActiveModule =
@@ -76,8 +77,10 @@ type ActiveModule =
   | 'carta-ejecutiva-1pagina-banesco-2026'
   | 'contabilidad-banesco-2026'
   | 'comprobantes-anticipos-2026'
+  | 'contrato-anticipo-clientes-2026'
   | 'comprobantes-traspasos-2026'
   | 'comprobantes-dolares-banesco-2026'
+  | 'resumen-dolares-destino-2026'
   | 'comprobantes-restantes-2026'
   | 'repositorio-seniat-2026'
   | 'auditoria-oni-2026'
@@ -89,7 +92,7 @@ type ActiveModule =
   | 'seguridad-bd';
 
 export default function App() {
-  const [activeModule, setActiveModule] = useState<ActiveModule>('carta-ejecutiva-1pagina-banesco-2026');
+  const [activeModule, setActiveModule] = useState<ActiveModule>('contrato-anticipo-clientes-2026');
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [authReady, setAuthReady] = useState<boolean>(false);
   const [isSyncingFirestore, setIsSyncingFirestore] = useState<boolean>(false);
@@ -175,7 +178,7 @@ export default function App() {
 
   const [vouchers, setVouchers] = useState<OfficialAccountingVoucher[]>(() => {
     try {
-      const saved = localStorage.getItem('nominus_cafe_1_oni_vouchers_2026_v1');
+      const saved = localStorage.getItem('nominus_cafe_1_oni_vouchers_2026_v3_igtf0');
       if (saved) {
         const parsed: OfficialAccountingVoucher[] = JSON.parse(saved);
         if (parsed.length >= TODOS_LOS_COMPROBANTES_BANESCO_2026.length) {
@@ -631,7 +634,7 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem('nominus_cafe_1_oni_vouchers_2026_v1', JSON.stringify(vouchers));
+      localStorage.setItem('nominus_cafe_1_oni_vouchers_2026_v3_igtf0', JSON.stringify(vouchers));
     } catch {
       // ignore
     }
@@ -871,7 +874,7 @@ export default function App() {
     },
     {
       id: 'comprobantes-anticipos-2026',
-      numero: '02',
+      numero: '02-A',
       tituloCorto: 'Comprobantes Anticipos',
       subtitulo: 'Hoja Anticipos Clientes (Bs. 1.571,5M)',
       pastelBg: 'bg-[#FEF3C7]/85 hover:bg-[#FEF3C7]',
@@ -879,6 +882,17 @@ export default function App() {
       pastelBorder: 'border-[#FCD34D]',
       textAccent: 'text-[#78350F]',
       icon: <FileCheck2 className="w-5 h-5 text-[#B45309]" />,
+    },
+    {
+      id: 'contrato-anticipo-clientes-2026',
+      numero: '02-B',
+      tituloCorto: 'Contrato de Anticipo',
+      subtitulo: 'Llenar y Firmar por los Clientes',
+      pastelBg: 'bg-[#DCFCE7]/95 hover:bg-[#DCFCE7]',
+      pastelActiveBg: 'bg-[#DCFCE7] ring-2 ring-[#15803D]',
+      pastelBorder: 'border-[#4ADE80]',
+      textAccent: 'text-[#14532D]',
+      icon: <FileText className="w-5 h-5 text-[#15803D]" />,
     },
     {
       id: 'comprobantes-traspasos-2026',
@@ -893,14 +907,25 @@ export default function App() {
     },
     {
       id: 'comprobantes-dolares-banesco-2026',
-      numero: '04',
-      tituloCorto: 'Compras Dólares Banesco',
-      subtitulo: 'Mesa de Cambio BCV (US$ 556.890,45)',
+      numero: '04-A',
+      tituloCorto: 'Compras Dólares (29 Rec.)',
+      subtitulo: 'Descargar Recibos en Lotes + BCV',
       pastelBg: 'bg-[#FFEDD5]/85 hover:bg-[#FFEDD5]',
       pastelActiveBg: 'bg-[#FFEDD5] ring-2 ring-[#C2410C]',
       pastelBorder: 'border-[#FDBA74]',
       textAccent: 'text-[#7C2D12]',
       icon: <DollarSign className="w-5 h-5 text-[#C2410C]" />,
+    },
+    {
+      id: 'resumen-dolares-destino-2026',
+      numero: '04-B',
+      tituloCorto: 'Resumen Dólares y Destino',
+      subtitulo: '¿Cuánto se compró y a dónde fue?',
+      pastelBg: 'bg-[#FEF3C7]/95 hover:bg-[#FEF3C7]',
+      pastelActiveBg: 'bg-[#FEF3C7] ring-2 ring-[#D97706]',
+      pastelBorder: 'border-[#F59E0B]',
+      textAccent: 'text-[#78350F]',
+      icon: <Layers className="w-5 h-5 text-[#D97706]" />,
     },
     {
       id: 'comprobantes-restantes-2026',
@@ -1052,6 +1077,16 @@ export default function App() {
               Comprobantes Anticipos
             </button>
             <button
+              onClick={() => setActiveModule('contrato-anticipo-clientes-2026')}
+              className={`hover:text-[#1C1917] hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                activeModule === 'contrato-anticipo-clientes-2026'
+                  ? 'text-[#15803D] font-bold underline'
+                  : ''
+              }`}
+            >
+              Contrato Anticipo (Clientes)
+            </button>
+            <button
               onClick={() => setActiveModule('comprobantes-traspasos-2026')}
               className={`hover:text-[#1C1917] hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                 activeModule === 'comprobantes-traspasos-2026'
@@ -1065,11 +1100,21 @@ export default function App() {
               onClick={() => setActiveModule('comprobantes-dolares-banesco-2026')}
               className={`hover:text-[#1C1917] hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                 activeModule === 'comprobantes-dolares-banesco-2026'
-                  ? 'text-[#1C1917] font-bold underline'
+                  ? 'text-[#C2410C] font-bold underline'
                   : ''
               }`}
             >
-              Compras Dólares
+              Compras Dólares (Lotes)
+            </button>
+            <button
+              onClick={() => setActiveModule('resumen-dolares-destino-2026')}
+              className={`hover:text-[#1C1917] hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                activeModule === 'resumen-dolares-destino-2026'
+                  ? 'text-[#B45309] font-bold underline'
+                  : ''
+              }`}
+            >
+              Resumen Dólares y Destino
             </button>
             <button
               onClick={() => setActiveModule('comprobantes-restantes-2026')}
@@ -1247,8 +1292,10 @@ export default function App() {
 
           {(activeModule === 'contabilidad-banesco-2026' ||
             activeModule === 'comprobantes-anticipos-2026' ||
+            activeModule === 'contrato-anticipo-clientes-2026' ||
             activeModule === 'comprobantes-traspasos-2026' ||
             activeModule === 'comprobantes-dolares-banesco-2026' ||
+            activeModule === 'resumen-dolares-destino-2026' ||
             activeModule === 'comprobantes-restantes-2026' ||
             activeModule === 'repositorio-seniat-2026') && (
             <AgricolaOniAccountingAndVouchersSuiteView

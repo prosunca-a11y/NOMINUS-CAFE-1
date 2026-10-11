@@ -454,8 +454,8 @@ export const CUADRO_SALIDAS_BANCO_POR_CATEGORIA: MonthlyAuditRow[] = [
     id: 'salida-comisiones-igtf',
     codigoCuentaContable: '5.3.01 / 5.3.02',
     origenOCategoria:
-      '7. Comisiones Bancarias Banesco (COM. TRF. MB / COM. PAGO MOVIL CCE) e Impuesto IGTF',
-    naturalezaContable: 'Gastos Financieros Bancarios y Tributos a las Transacciones Financieras',
+      '7. Comisiones Bancarias Banesco (COM. TRF. MB / COM. PAGO MOVIL CCE / SGLBTR) e IGTF Divisas 3% (IGTF en Bs.: 0% Decreto N° 4.972)',
+    naturalezaContable: 'Gastos Financieros Bancarios (IGTF en Bolívares 0% s/G.O.E. N° 6.821; IGTF Divisas 3%)',
     ene: 198420.15,
     feb: 245110.4,
     mar: 54120.8,
@@ -468,7 +468,7 @@ export const CUADRO_SALIDAS_BANCO_POR_CATEGORIA: MonthlyAuditRow[] = [
     porcentajeTotal: 1.37,
     totalUSD: 39618.42,
     observacionCPC:
-      'Cargos automáticos de Banesco verificados en el extracto de salidas (COM. PAGO MOVIL CCE, COM. TRF. MB, Mantenimiento e IGTF). Las comisiones bancarias son 100% deducibles del ISLR; el IGTF debe conciliarse según reforma vigente.',
+      'Cargos automáticos de Banesco verificados en el extracto de salidas (COM. PAGO MOVIL CCE, COM. TRF. MB, SGLBTR y Mantenimiento). Conforme al Decreto N° 4.972 (G.O.E. N° 6.821 del 12/07/2024), la alícuota de IGTF para operaciones en Bolívares fue reducida del 2% al 0%; manteniéndose vigente el 3% únicamente para pagos en divisas o criptoactivos a Sujetos Pasivos Especiales.',
     alertaRiesgo: 'BAJO',
   },
 ];

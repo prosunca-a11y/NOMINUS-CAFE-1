@@ -26,13 +26,22 @@ import {
   PlusCircle,
   Stamp,
   FileText,
+  Layers,
+  Download,
+  FileDown,
 } from 'lucide-react';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { AgricolaOniFxDestinationSummarySheetView } from './AgricolaOniFxDestinationSummarySheetView';
+import { AgricolaOniClientAdvanceContractView } from './AgricolaOniClientAdvanceContractView';
 
 export type OniAccountingSubSheet =
   | 'contabilidad-banesco-2026'
   | 'comprobantes-anticipos-2026'
+  | 'contrato-anticipo-clientes-2026'
   | 'comprobantes-traspasos-2026'
   | 'comprobantes-dolares-banesco-2026'
+  | 'resumen-dolares-destino-2026'
   | 'comprobantes-restantes-2026'
   | 'repositorio-seniat-2026';
 
@@ -67,6 +76,10 @@ export const AgricolaOniAccountingAndVouchersSuiteView: React.FC<
   const [uploadingVoucherId, setUploadingVoucherId] = useState<string | null>(null);
   const [bannerMsg, setBannerMsg] = useState<string | null>(null);
   const [showNewVoucherForm, setShowNewVoucherForm] = useState<boolean>(false);
+  const [lotePreset, setLotePreset] = useState<string>('ALL_SHEET');
+  const [selectedContractVoucherId, setSelectedContractVoucherId] = useState<
+    string | undefined
+  >(undefined);
 
   // Campos para crear un nuevo comprobante personalizado si el contador desea anexar uno adicional
   const [nuevoNum, setNuevoNum] = useState<string>('COMP-ESP-2026-099');
@@ -371,13 +384,23 @@ export const AgricolaOniAccountingAndVouchersSuiteView: React.FC<
     },
     {
       id: 'comprobantes-anticipos-2026',
-      numero: 'HOJA B',
+      numero: 'HOJA B-1',
       titulo: 'Comprobantes Anticipos Clientes',
       subtitulo: 'Terceros RIF + Banesco + Productores V-',
       montoResumen: 'Bs. 1.571.513.047,62 (US$ 2.317.822,22)',
       bg: 'bg-[#FEF3C7]/85 border-[#FCD34D] text-[#78350F]',
       activeRing: 'ring-2 ring-[#B45309] bg-[#FEF3C7]',
       icon: <FileCheck2 className="w-4 h-4 text-[#B45309]" />,
+    },
+    {
+      id: 'contrato-anticipo-clientes-2026',
+      numero: 'HOJA B-2',
+      titulo: 'Modelo Contrato de Anticipo',
+      subtitulo: 'Para Llenar y Firmar por los Clientes',
+      montoResumen: '17 Contratos + Formato en Blanco PDF/Word',
+      bg: 'bg-[#DCFCE7]/95 border-[#4ADE80] text-[#14532D]',
+      activeRing: 'ring-2 ring-[#15803D] bg-[#DCFCE7]',
+      icon: <FileText className="w-4 h-4 text-[#15803D]" />,
     },
     {
       id: 'comprobantes-traspasos-2026',
@@ -391,13 +414,23 @@ export const AgricolaOniAccountingAndVouchersSuiteView: React.FC<
     },
     {
       id: 'comprobantes-dolares-banesco-2026',
-      numero: 'HOJA D',
-      titulo: 'Comprobantes Compras Dólares',
-      subtitulo: 'Mesa de Cambio Banesco / Divisas BCV',
+      numero: 'HOJA D-1',
+      titulo: 'Compra de Dólares (29 Recibos)',
+      subtitulo: 'Descarga en Lotes + Pactos BCV',
       montoResumen: 'Bs. 375.630.000,00 (US$ 556.890,45)',
       bg: 'bg-[#FFEDD5]/85 border-[#FDBA74] text-[#7C2D12]',
       activeRing: 'ring-2 ring-[#C2410C] bg-[#FFEDD5]',
       icon: <DollarSign className="w-4 h-4 text-[#C2410C]" />,
+    },
+    {
+      id: 'resumen-dolares-destino-2026',
+      numero: 'HOJA D-2',
+      titulo: 'Resumen Dólares y Destino Bs.',
+      subtitulo: '¿Cuánto se compró y a dónde fue?',
+      montoResumen: 'US$ 556.890,45 → Café, Flete, Trilla',
+      bg: 'bg-[#FEF3C7]/95 border-[#F59E0B] text-[#78350F]',
+      activeRing: 'ring-2 ring-[#D97706] bg-[#FEF3C7]',
+      icon: <Layers className="w-4 h-4 text-[#D97706]" />,
     },
     {
       id: 'comprobantes-restantes-2026',
@@ -420,6 +453,393 @@ export const AgricolaOniAccountingAndVouchersSuiteView: React.FC<
       icon: <FolderArchive className="w-4 h-4 text-[#6B21A8]" />,
     },
   ];
+
+  // Obtener la lista de recibos según el lote seleccionado para descarga masiva
+  const getBatchVouchersToDownload = (): {
+    list: OfficialAccountingVoucher[];
+    label: string;
+  } => {
+    const baseSheetList =
+      activeSubSheet === 'comprobantes-dolares-banesco-2026'
+        ? vouchers.filter((v) => v.hojaDestino === 'COMPRAS_DOLARES_BANESCO')
+        : sheetVouchers;
+
+    if (lotePreset === 'ENE_MAY') {
+      return {
+        list: baseSheetList.filter((v) =>
+          ['Ene', 'Feb', 'Mar', 'Abr', 'May'].includes(v.mes)
+        ),
+        label: 'Lote_Enero_a_Mayo_2026',
+      };
+    }
+    if (lotePreset === 'JUN') {
+      return {
+        list: baseSheetList.filter((v) => v.mes === 'Jun'),
+        label: 'Lote_Junio_2026',
+      };
+    }
+    if (lotePreset === 'JUL') {
+      return {
+        list: baseSheetList.filter((v) => v.mes === 'Jul'),
+        label: 'Lote_Julio_2026',
+      };
+    }
+    if (lotePreset === 'AGO') {
+      return {
+        list: baseSheetList.filter((v) => v.mes === 'Ago'),
+        label: 'Lote_Agosto_2026',
+      };
+    }
+    if (lotePreset === 'FILTERED') {
+      return {
+        list: sheetVouchers,
+        label: `Lote_Filtrado_${sheetVouchers.length}_Recibos`,
+      };
+    }
+    return {
+      list: baseSheetList,
+      label: `Lote_Completo_Ene_Ago_2026_${baseSheetList.length}_Recibos`,
+    };
+  };
+
+  // Descargar Recibos en Lote en un solo PDF Multipágina Oficial (1 recibo por página listo para firmar y sellar)
+  const handleDownloadBatchReceiptsPdf = () => {
+    const { list, label } = getBatchVouchersToDownload();
+    if (list.length === 0) return;
+
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'letter',
+    });
+
+    const pageW = doc.internal.pageSize.getWidth();
+    const margin = 14;
+    const contentW = pageW - margin * 2;
+
+    list.forEach((v, idx) => {
+      if (idx > 0) {
+        doc.addPage('letter', 'portrait');
+      }
+
+      doc.setFillColor(28, 25, 23);
+      doc.rect(margin, 12, contentW, 20, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(255, 255, 255);
+      doc.text(`${oniCompany.razonSocial} · RIF: ${oniCompany.rif}`, margin + 4, 19);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.text(
+        `RECIBO / COMPROBANTE OFICIAL EN LOTE (${idx + 1} de ${list.length}) · EXPEDIENTE BANESCO Y SENIAT`,
+        margin + 4,
+        24.5
+      );
+      doc.text(
+        `Cta. Banesco VES: ${oniCompany.cuentaBanescoVES} | Cta. Custodia USD: ${oniCompany.cuentaBanescoUSD}`,
+        margin + 4,
+        29.5
+      );
+
+      doc.setFillColor(255, 237, 213);
+      doc.setDrawColor(194, 65, 12);
+      doc.rect(margin, 35, contentW, 22, 'FD');
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(124, 45, 18);
+      doc.text(
+        `COMPROBANTE / RECIBO N°: ${v.numeroComprobante}`,
+        margin + 4,
+        42
+      );
+      doc.setFontSize(9);
+      doc.setTextColor(28, 25, 23);
+      doc.text(`Fecha de Emisión: ${v.fechaEmision} (${v.mes} 2026)`, margin + 4, 48);
+      doc.text(`Referencia Bancaria Banesco: ${v.referenciaBancariaBanesco}`, margin + 4, 53.5);
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.setTextColor(20, 83, 45);
+      doc.text(
+        `EQUIVALENTE DIVISAS: US$ ${fmtUSD(v.montoEquivalenteUSD)}`,
+        pageW - margin - 4,
+        42,
+        { align: 'right' }
+      );
+      doc.setTextColor(154, 52, 18);
+      doc.text(
+        `MONTO OPERACIÓN: Bs. ${fmtBs(v.montoOperacionBs)}`,
+        pageW - margin - 4,
+        48,
+        { align: 'right' }
+      );
+      doc.setFontSize(8.5);
+      doc.setTextColor(68, 64, 60);
+      doc.text(
+        `Tasa Oficial BCV Aplicada: Bs. ${fmtBs(v.tasaBcvAplicada)} / USD`,
+        pageW - margin - 4,
+        53.5,
+        { align: 'right' }
+      );
+
+      autoTable(doc, {
+        startY: 61,
+        margin: { left: margin, right: margin },
+        head: [['Campo de Trazabilidad Bancaria y Fiscal', 'Información Verificada del Recibo']],
+        body: [
+          ['Contraparte / Destinatario', v.contraparteNombre],
+          ['RIF / Cédula', v.contraparteRifOCedula],
+          ['Banco y Cuenta Vinculada', `${v.bancoContraparte} — ${v.numeroCuentaContraparte}`],
+          ['Concepto de la Operación', v.conceptoGeneral],
+          ['1. Origen Lícito de los Fondos', v.trazabilidadOrigenFondos],
+          [
+            '2. Hacia Dónde Fue Ese Dinero (Justificación de Salida en Bs. y Divisas)',
+            v.trazabilidadDestinoFondos,
+          ],
+          ['3. Base Legal Cambiaria BCV / SUDEBAN', v.baseLegalAntidelitosCambiarios],
+        ],
+        theme: 'grid',
+        styles: { fontSize: 8, cellPadding: 2.2, textColor: [28, 25, 23] },
+        headStyles: { fillColor: [12, 74, 110], textColor: [255, 255, 255], fontStyle: 'bold' },
+        columnStyles: {
+          0: { cellWidth: 58, fontStyle: 'bold', fillColor: [250, 248, 245] },
+          1: { cellWidth: contentW - 58 },
+        },
+      });
+
+      const afterInfoY =
+        (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
+
+      autoTable(doc, {
+        startY: afterInfoY,
+        margin: { left: margin, right: margin },
+        head: [
+          [
+            'Código Cta.',
+            'Denominación de la Cuenta Contable (VEN-NIF)',
+            'Referencia Auxiliar',
+            'Debe (Bs.)',
+            'Haber (Bs.)',
+            'Equiv. US$',
+          ],
+        ],
+        body: [
+          ...v.lineasAsientoContable.map((l) => [
+            l.codigoCuenta,
+            l.nombreCuenta,
+            l.referenciaAuxiliar,
+            l.debeBs > 0 ? `Bs. ${fmtBs(l.debeBs)}` : '—',
+            l.haberBs > 0 ? `Bs. ${fmtBs(l.haberBs)}` : '—',
+            `$${fmtUSD(l.debeUSD > 0 ? l.debeUSD : l.haberUSD)}`,
+          ]),
+          [
+            'TOTAL',
+            'SUMAS IGUALES DEL ASIENTO CONTABLE (PARTIDA DOBLE)',
+            v.expedienteSeniatNro || '',
+            `Bs. ${fmtBs(v.montoOperacionBs)}`,
+            `Bs. ${fmtBs(v.montoOperacionBs)}`,
+            `$${fmtUSD(v.montoEquivalenteUSD)}`,
+          ],
+        ],
+        theme: 'grid',
+        styles: { fontSize: 7.8, cellPadding: 2, textColor: [28, 25, 23] },
+        headStyles: { fillColor: [28, 25, 23], textColor: [255, 255, 255], fontStyle: 'bold' },
+      });
+
+      const afterJournalY =
+        (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 6;
+
+      doc.setFillColor(245, 245, 244);
+      doc.rect(margin, afterJournalY, contentW, 17, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7.5);
+      doc.setTextColor(28, 25, 23);
+      doc.text(
+        'DECLARACIÓN JURADA DE ORIGEN Y DESTINO LÍCITO DE FONDOS (RESOLUCIÓN SUDEBAN 083.18 / CONVENIO CAMBIARIO N° 1 BCV):',
+        margin + 3,
+        afterJournalY + 5
+      );
+      doc.setFont('helvetica', 'normal');
+      const declLines = doc.splitTextToSize(
+        `Quienes suscriben en representación de ${oniCompany.razonSocial} (RIF ${oniCompany.rif}) declaran bajo fe de juramento que los fondos de este recibo por Bs. ${fmtBs(v.montoOperacionBs)} (US$ ${fmtUSD(v.montoEquivalenteUSD)}) tienen origen y destino lícitos en el giro agroindustrial cafetero (Expediente ${v.expedienteSeniatNro}).`,
+        contentW - 6
+      );
+      doc.text(declLines, margin + 3, afterJournalY + 9.5);
+
+      const sigY = afterJournalY + 22;
+      const boxW = (contentW - 8) / 3;
+      doc.setDrawColor(28, 25, 23);
+      doc.rect(margin, sigY, boxW, 27);
+      doc.rect(margin + boxW + 4, sigY, boxW, 27);
+      doc.rect(margin + (boxW + 4) * 2, sigY, boxW, 27);
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7.5);
+      doc.text('1. REPRESENTANTE LEGAL', margin + boxW / 2, sigY + 5, { align: 'center' });
+      doc.text('2. CONTADOR PÚBLICO (CPC)', margin + boxW + 4 + boxW / 2, sigY + 5, {
+        align: 'center',
+      });
+      doc.text('3. RECEPCIÓN BANESCO / SENIAT', margin + (boxW + 4) * 2 + boxW / 2, sigY + 5, {
+        align: 'center',
+      });
+
+      doc.line(margin + 5, sigY + 18, margin + boxW - 5, sigY + 18);
+      doc.line(margin + boxW + 9, sigY + 18, margin + boxW * 2 - 1, sigY + 18);
+      doc.line(margin + (boxW + 4) * 2 + 5, sigY + 18, margin + contentW - 5, sigY + 18);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7);
+      doc.text(
+        `${oniCompany.representanteLegal} · Sello Húmedo`,
+        margin + boxW / 2,
+        sigY + 23,
+        { align: 'center' }
+      );
+      doc.text(
+        'Firma y Sello Húmedo CPC (VEN-NIF)',
+        margin + boxW + 4 + boxW / 2,
+        sigY + 23,
+        { align: 'center' }
+      );
+      doc.text(
+        'Sello Húmedo de Recepción / Archivo',
+        margin + (boxW + 4) * 2 + boxW / 2,
+        sigY + 23,
+        { align: 'center' }
+      );
+    });
+
+    const filename = `Recibos_En_Lote_${label}_Agricola_Oni.pdf`;
+    doc.save(filename);
+    setBannerMsg(
+      `Descarga en lote completada: ${list.length} recibos oficiales generados en "${filename}" (1 recibo por página listo para imprimir, firmar y sellar).`
+    );
+  };
+
+  // Descargar Recibos en Lote en formato Word (.DOC) con salto de página por cada recibo
+  const handleDownloadBatchReceiptsWord = () => {
+    const { list, label } = getBatchVouchersToDownload();
+    if (list.length === 0) return;
+
+    const pagesHtml = list
+      .map(
+        (v, idx) => `
+        <div style="${idx < list.length - 1 ? 'page-break-after: always;' : ''} padding-bottom: 12pt;">
+          <table style="width:100%; border-collapse:collapse; margin-bottom:8pt;">
+            <tr style="background-color:#1C1917; color:#FFFFFF;">
+              <td style="padding:8pt; border:1px solid #1C1917;">
+                <strong style="font-size:11pt;">${oniCompany.razonSocial} (RIF: ${oniCompany.rif})</strong><br/>
+                <span style="font-size:8.5pt;">RECIBO OFICIAL DE COMPRA DE DÓLARES Y DESTINO DE FONDOS EN BOLÍVARES · Cta. Banesco: ${oniCompany.cuentaBanescoVES}</span>
+              </td>
+              <td style="padding:8pt; border:1px solid #1C1917; text-align:right;">
+                <strong style="font-size:10pt; color:#FDBA74;">RECIBO N° ${v.numeroComprobante}</strong><br/>
+                <span style="font-size:8.5pt;">Fecha: ${v.fechaEmision} (${v.mes} 2026) · Recibo ${idx + 1} de ${list.length}</span>
+              </td>
+            </tr>
+          </table>
+
+          <table style="width:100%; border-collapse:collapse; margin-bottom:8pt; font-size:9pt;">
+            <tr style="background-color:#FFEDD5;">
+              <td style="border:1px solid #44403C; padding:5pt;"><strong>Referencia / Pacto Banesco:</strong> ${v.referenciaBancariaBanesco}</td>
+              <td style="border:1px solid #44403C; padding:5pt;"><strong>Dólares Comprados:</strong> <span style="color:#14532D;font-weight:bold;">US$ ${fmtUSD(v.montoEquivalenteUSD)}</span></td>
+              <td style="border:1px solid #44403C; padding:5pt;"><strong>Tasa BCV:</strong> Bs. ${fmtBs(v.tasaBcvAplicada)}</td>
+              <td style="border:1px solid #44403C; padding:5pt;"><strong>Monto en Bolívares:</strong> <span style="color:#9A3412;font-weight:bold;">Bs. ${fmtBs(v.montoOperacionBs)}</span></td>
+            </tr>
+          </table>
+
+          <table style="width:100%; border-collapse:collapse; margin-bottom:8pt; font-size:8.5pt;">
+            <tr>
+              <td style="border:1px solid #44403C; padding:5pt; width:28%; background-color:#FAF8F5;"><strong>Contraparte / Destinatario:</strong></td>
+              <td style="border:1px solid #44403C; padding:5pt;">${v.contraparteNombre} (${v.contraparteRifOCedula})</td>
+            </tr>
+            <tr>
+              <td style="border:1px solid #44403C; padding:5pt; background-color:#FAF8F5;"><strong>Concepto de la Operación:</strong></td>
+              <td style="border:1px solid #44403C; padding:5pt;">${v.conceptoGeneral}</td>
+            </tr>
+            <tr>
+              <td style="border:1px solid #44403C; padding:5pt; background-color:#FAF8F5;"><strong>1. Origen de los Fondos en Bs.:</strong></td>
+              <td style="border:1px solid #44403C; padding:5pt;">${v.trazabilidadOrigenFondos}</td>
+            </tr>
+            <tr>
+              <td style="border:1px solid #44403C; padding:5pt; background-color:#DCFCE7;"><strong>2. Hacia Dónde Fue Ese Dinero (Justificación de Salida):</strong></td>
+              <td style="border:1px solid #44403C; padding:5pt; font-weight:bold;">${v.trazabilidadDestinoFondos}</td>
+            </tr>
+          </table>
+
+          <table style="width:100%; border-collapse:collapse; margin-bottom:10pt; font-size:8.5pt;">
+            <thead>
+              <tr style="background-color:#1C1917; color:#FFFFFF;">
+                <th style="border:1px solid #1C1917; padding:4pt;">Código Cta.</th>
+                <th style="border:1px solid #1C1917; padding:4pt;">Cuenta Contable VEN-NIF</th>
+                <th style="border:1px solid #1C1917; padding:4pt;">Referencia Auxiliar</th>
+                <th style="border:1px solid #1C1917; padding:4pt; text-align:right;">Debe (Bs.)</th>
+                <th style="border:1px solid #1C1917; padding:4pt; text-align:right;">Haber (Bs.)</th>
+                <th style="border:1px solid #1C1917; padding:4pt; text-align:right;">Equiv. US$</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${v.lineasAsientoContable
+                .map(
+                  (l) => `
+                <tr>
+                  <td style="border:1px solid #44403C; padding:4pt; font-family:Consolas,monospace; font-weight:bold;">${l.codigoCuenta}</td>
+                  <td style="border:1px solid #44403C; padding:4pt;">${l.nombreCuenta}</td>
+                  <td style="border:1px solid #44403C; padding:4pt;">${l.referenciaAuxiliar}</td>
+                  <td style="border:1px solid #44403C; padding:4pt; text-align:right;">${l.debeBs > 0 ? 'Bs. ' + fmtBs(l.debeBs) : '—'}</td>
+                  <td style="border:1px solid #44403C; padding:4pt; text-align:right;">${l.haberBs > 0 ? 'Bs. ' + fmtBs(l.haberBs) : '—'}</td>
+                  <td style="border:1px solid #44403C; padding:4pt; text-align:right;">US$ ${fmtUSD(l.debeUSD > 0 ? l.debeUSD : l.haberUSD)}</td>
+                </tr>`
+                )
+                .join('')}
+            </tbody>
+          </table>
+
+          <table style="width:100%; border-collapse:collapse; margin-top:14pt; font-size:8pt;">
+            <tr>
+              <td style="border:1px solid #1C1917; padding:8pt; text-align:center; width:33%;">
+                <strong>1. REPRESENTANTE LEGAL</strong><br/><br/><br/>
+                _______________________________<br/>
+                ${oniCompany.representanteLegal}<br/>Firma y Sello Húmedo
+              </td>
+              <td style="border:1px solid #1C1917; padding:8pt; text-align:center; width:33%;">
+                <strong>2. CONTADOR PÚBLICO (CPC)</strong><br/><br/><br/>
+                _______________________________<br/>
+                Visado Contable VEN-NIF<br/>Firma y Sello Húmedo CPC
+              </td>
+              <td style="border:1px solid #1C1917; padding:8pt; text-align:center; width:34%;">
+                <strong>3. RECEPCIÓN BANESCO / SENIAT</strong><br/><br/><br/>
+                _______________________________<br/>
+                Sello Húmedo de Agencia / Expediente ${v.expedienteSeniatNro}
+              </td>
+            </tr>
+          </table>
+        </div>`
+      )
+      .join('');
+
+    const html = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office"
+            xmlns:w="urn:schemas-microsoft-com:office:word"
+            xmlns="http://www.w3.org/TR/REC-html40">
+      <head><meta charset="utf-8" /><title>Lote de Recibos ${label}</title></head>
+      <body style="font-family:Arial,sans-serif;">${pagesHtml}</body>
+      </html>
+    `;
+
+    const blob = new Blob(['\ufeff', html], {
+      type: 'application/msword;charset=utf-8',
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Recibos_En_Lote_${label}_Agricola_Oni.doc`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setBannerMsg(
+      `Descarga en lote Word (.DOC) completada: ${list.length} recibos listos para imprimir o editar.`
+    );
+  };
 
   const handleAddCustomVoucherSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -575,8 +995,8 @@ export const AgricolaOniAccountingAndVouchersSuiteView: React.FC<
           </div>
         </div>
 
-        {/* SELECTOR DE LAS 6 HOJAS SOLICITADAS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5">
+        {/* SELECTOR DE LAS 8 HOJAS SOLICITADAS */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-2">
           {subSheetsNav.map((item) => {
             const isSelected = activeSubSheet === item.id;
             return (
@@ -1200,10 +1620,108 @@ export const AgricolaOniAccountingAndVouchersSuiteView: React.FC<
       )}
 
       {/* =====================================================================
-          HOJAS DE COMPROBANTES ESPECIALIZADOS (HOJAS B, C, D, E Y F)
+          HOJA B-2: MODELO DE CONTRATO DE ANTICIPO DE CLIENTES (LLENAR Y FIRMAR)
          ===================================================================== */}
-      {activeSubSheet !== 'contabilidad-banesco-2026' && (
+      {activeSubSheet === 'contrato-anticipo-clientes-2026' && (
+        <AgricolaOniClientAdvanceContractView
+          companies={companies}
+          vouchers={vouchers}
+          initialVoucherId={selectedContractVoucherId}
+          onNavigateToModule={(modId) => onSelectSubSheet(modId as OniAccountingSubSheet)}
+        />
+      )}
+
+      {/* =====================================================================
+          HOJA D-2: HOJA APARTE DE RESUMEN DE DÓLARES COMPRADOS Y DESTINO DEL DINERO
+         ===================================================================== */}
+      {activeSubSheet === 'resumen-dolares-destino-2026' && (
+        <AgricolaOniFxDestinationSummarySheetView
+          companies={companies}
+          vouchers={vouchers}
+          onNavigateToModule={(modId) => onSelectSubSheet(modId as OniAccountingSubSheet)}
+        />
+      )}
+
+      {/* =====================================================================
+          HOJAS DE COMPROBANTES ESPECIALIZADOS (HOJAS B, C, D-1, E Y F)
+         ===================================================================== */}
+      {activeSubSheet !== 'contabilidad-banesco-2026' &&
+        activeSubSheet !== 'contrato-anticipo-clientes-2026' &&
+        activeSubSheet !== 'resumen-dolares-destino-2026' && (
         <section className="bg-white border border-[#E7E5E4] rounded-2xl p-6 shadow-sm space-y-6">
+          {/* PANEL ESPECIAL DE DESCARGA DE RECIBOS EN LOTES (DESTACADO EN HOJA COMPRA DE DÓLARES) */}
+          <div className="no-print bg-gradient-to-r from-[#FFEDD5] via-[#FEF3C7] to-[#DCFCE7] border-2 border-[#C2410C] rounded-2xl p-5 space-y-4 shadow-sm">
+            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-2 text-xs font-bold text-[#7C2D12] bg-white px-3 py-1 rounded-lg border border-[#FDBA74]">
+                  <Layers className="w-4 h-4 text-[#C2410C]" />
+                  DESCARGA MASIVA DE RECIBOS EN LOTES (LISTOS PARA IMPRIMIR, FIRMAR Y SELLAR)
+                </div>
+                <h4 className="text-base sm:text-lg font-bold text-[#1C1917] font-display">
+                  {activeSubSheet === 'comprobantes-dolares-banesco-2026'
+                    ? 'Descargar los 29 Recibos de Compra de Dólares en Lotes (PDF Multipágina y Word .DOC)'
+                    : `Descargar los ${sheetVouchers.length} Comprobantes de esta Hoja en Lote (PDF y Word)`}
+                </h4>
+                <p className="text-xs text-[#44403C]">
+                  Como son muchos recibos individuales, selecciona el lote que deseas descargar (todos los 29 recibos de Enero a Agosto 2026 o por mes) y descárgalos en un solo archivo <strong>PDF Multipágina</strong> o <strong>Word (.DOC)</strong> con 1 recibo completo por página.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+                <select
+                  value={lotePreset}
+                  onChange={(e) => setLotePreset(e.target.value)}
+                  className="px-3 py-2 text-xs font-bold bg-white border-2 border-[#C2410C] text-[#1C1917] rounded-xl"
+                >
+                  <option value="ALL_SHEET">
+                    Lote Completo Ene–Ago 2026 ({activeSubSheet === 'comprobantes-dolares-banesco-2026' ? '29 Recibos — US$ 556.890,45' : `${sheetVouchers.length} Recibos`})
+                  </option>
+                  <option value="ENE_MAY">
+                    Lote 1: Enero a Mayo 2026 (17 Recibos — US$ 22.465,78 / Bs. 9,63M)
+                  </option>
+                  <option value="JUN">
+                    Lote 2: Junio 2026 (4 Recibos Mayoristas — US$ 134.272,94 / Bs. 88,60M)
+                  </option>
+                  <option value="JUL">
+                    Lote 3: Julio 2026 (4 Recibos Mayoristas — US$ 198.231,39 / Bs. 134,50M)
+                  </option>
+                  <option value="AGO">
+                    Lote 4: Agosto 2026 (4 Recibos Mayoristas — US$ 201.920,34 / Bs. 142,90M)
+                  </option>
+                  <option value="FILTERED">
+                    Lote según Filtro Actual en Pantalla ({sheetVouchers.length} Recibos)
+                  </option>
+                </select>
+
+                <button
+                  type="button"
+                  onClick={handleDownloadBatchReceiptsPdf}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#C2410C] text-white text-xs font-bold rounded-xl hover:bg-[#9A3412] transition-colors cursor-pointer shadow-sm"
+                >
+                  <FileDown className="w-4 h-4" />
+                  Descargar Recibos en Lote (.PDF)
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleDownloadBatchReceiptsWord}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#0369A1] text-white text-xs font-bold rounded-xl hover:bg-[#075985] transition-colors cursor-pointer shadow-sm"
+                >
+                  <Download className="w-4 h-4" />
+                  Descargar Recibos en Lote (.DOC)
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onSelectSubSheet('resumen-dolares-destino-2026')}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#15803D] text-white text-xs font-bold rounded-xl hover:bg-[#166534] transition-colors cursor-pointer shadow-sm"
+                >
+                  <Layers className="w-4 h-4" />
+                  Ver Hoja Resumen: ¿A Dónde Fue el Dinero? →
+                </button>
+              </div>
+            </div>
+          </div>
           {/* CABECERA ESPECÍFICA SEGÚN LA HOJA ACTIVA */}
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#E7E5E4] pb-4">
             <div className="space-y-1 max-w-3xl">
@@ -1528,6 +2046,21 @@ export const AgricolaOniAccountingAndVouchersSuiteView: React.FC<
                       </div>
 
                       <div className="no-print flex flex-wrap items-center gap-2">
+                        {v.hojaDestino === 'ANTICIPOS_CLIENTES' && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedContractVoucherId(v.id);
+                              onSelectSubSheet('contrato-anticipo-clientes-2026');
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#15803D] text-white text-xs font-bold rounded-xl hover:bg-[#14532D] cursor-pointer shadow-sm"
+                          >
+                            <FileText className="w-3.5 h-3.5" />
+                            Contrato Cliente (Llenar/Firmar)
+                          </button>
+                        )}
+
                         <button
                           type="button"
                           onClick={() => {

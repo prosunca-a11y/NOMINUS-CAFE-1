@@ -1595,380 +1595,955 @@ export const COMPROBANTES_TRANSFERENCIAS_INTERNAS_2026: OfficialAccountingVouche
 ];
 
 // ============================================================================
-// 3. COMPROBANTES DE COMPRAS DE DÓLARES A BANESCO (HOJA APARTE N° 3)
-// Mesa de Cambio Banesco / Intervención Cambiaria BCV y Pagos Café Exterior
-// Total Exacto Ene-Ago 2026: Bs. 375.630.000,00 | US$ 556.890,45
+// 3. COMPROBANTES / RECIBOS INDIVIDUALES DE COMPRAS DE DÓLARES A BANESCO (HOJA APARTE N° 3)
+// Mesa de Cambio Banesco / Intervención Cambiaria BCV y Destino de los Fondos en Bolívares y Divisas
+// Total Exacto Ene-Ago 2026 (29 Recibos Individuales): Bs. 375.630.000,00 | US$ 556.890,45
 // ============================================================================
-export const COMPROBANTES_COMPRAS_DOLARES_BANESCO_2026: OfficialAccountingVoucher[] = [
+
+export interface FxDestinationCategorySummary {
+  id: string;
+  item: string;
+  codigoCuentaVenNif: string;
+  categoriaDestino: string;
+  descripcionExplicativa: string;
+  beneficiariosPrincipales: string;
+  soporteDocumental: string;
+  montoUSD: number;
+  montoEquivalenteBs: number;
+  porcentajeDelTotal: number;
+}
+
+export interface MonthlyFxAndBsDestinationRow {
+  mesCodigo: 'Ene' | 'Feb' | 'Mar' | 'Abr' | 'May' | 'Jun' | 'Jul' | 'Ago';
+  mesNombre: string;
+  cantidadRecibos: number;
+  referenciasPactos: string;
+  tasaPromedioBcv: number;
+  dolaresCompradosUSD: number;
+  bolivaresLiquidadosBs: number;
+  destinoCafeProveedoresUSD: number;
+  destinoCafeProveedoresBs: number;
+  destinoFletesLogisticaUSD: number;
+  destinoFletesLogisticaBs: number;
+  destinoTrillaInsumosUSD: number;
+  destinoTrillaInsumosBs: number;
+  destinoComisionesIgtfUSD: number;
+  destinoComisionesIgtfBs: number;
+  quintalesCafeRespaldados: number;
+  clientesYContratosVinculados: string;
+}
+
+export const RESUMEN_DESTINO_DOLARES_COMPRADOS_2026: FxDestinationCategorySummary[] = [
   {
-    id: 'vch-fx-01',
-    numeroComprobante: 'COMP-FX-BAN-2026-001',
-    hojaDestino: 'COMPRAS_DOLARES_BANESCO',
-    subTipo: 'COMPRA_DIVISAS_MESA_CAMBIO',
-    naturalezaFlujo: 'SALIDA_BANESCO',
+    id: 'dest-fx-01',
+    item: '01',
+    codigoCuentaVenNif: '5.1.01.01 / 1.1.01.03',
+    categoriaDestino:
+      'Procura y Liquidación de Materia Prima Cafetalera (Café Verde Pergamino y Arábica Lavado — 2.490 Quintales)',
+    descripcionExplicativa:
+      'Fondos cambiados a Bolívares y aplicados al pago directo de cosecha de café verde en grano a productores primarios registrados en RUNSAI, centros de acopio rurales y proveedores de internación (Exento de IGTF en Bolívares: Alícuota 0% según Decreto N° 4.972, G.O.E. N° 6.821 del 12/07/2024).',
+    beneficiariosPrincipales:
+      'Productores Cafetaleros (Táchira, Mérida, Portuguesa y Lara), Centros de Acopio Primario y Exportadora Cafetera del Norte S.A.S.',
+    soporteDocumental:
+      'Liquidaciones de Cosecha, Autofacturas Agrícolas (Providencia 0071), Permisos INSAI y Notas de Romana.',
+    montoUSD: 458042.39,
+    montoEquivalenteBs: 308955675.0,
+    porcentajeDelTotal: 82.25,
+  },
+  {
+    id: 'dest-fx-02',
+    item: '02',
+    codigoCuentaVenNif: '5.1.02.04',
+    categoriaDestino:
+      'Logística de Flete Terrestre de Carga Pesada (Gandolas), Seguro de Tránsito, Caleta y Guías INSAI / SICA',
+    descripcionExplicativa:
+      'Fondos convertidos y pagados en Bolívares a empresas de transporte terrestre nacional para el traslado de los lotes de café desde los centros de acopio y frontera hacia los almacenes y plantas torrefactoras (Alícuota IGTF en Bolívares: 0% s/Decreto N° 4.972).',
+    beneficiariosPrincipales:
+      'Transportistas de Carga Pesada Domiciliados (con Retención 3% ISLR Cód. 053 Decreto 1.808), Cuadrillas de Caleta y Tasas INSAI.',
+    soporteDocumental:
+      'Facturas de Flete Nacional, Comprobantes de Retención ISLR 3%, Cartas de Porte y Guías de Movilización SADA/INSAI.',
+    montoUSD: 64042.4,
+    montoEquivalenteBs: 43197450.0,
+    porcentajeDelTotal: 11.5,
+  },
+  {
+    id: 'dest-fx-03',
+    item: '03',
+    codigoCuentaVenNif: '5.1.01.05',
+    categoriaDestino:
+      'Acondicionamiento Técnico de Trilla, Secado Mecánico, Sacos de Fique y Almacenamiento en Silos',
+    descripcionExplicativa:
+      'Pagos en Bolívares por servicio de trillado, clasificación electrónica del grano, control de humedad (11,5% - 12,0%), adquisición de sacos de fique de 46 Kg y depósito en almacenes (Alícuota IGTF en Bolívares: 0% s/Decreto N° 4.972).',
+    beneficiariosPrincipales:
+      'Plantas de Beneficio Húmedo/Seco, Proveedores de Empaques Agroindustriales y Almacenadoras Agrícolas.',
+    soporteDocumental:
+      'Facturas Fiscales de Servicio de Trilla, Certificados de Calidad COVENIN y Órdenes de Almacén.',
+    montoUSD: 33413.43,
+    montoEquivalenteBs: 22537800.0,
+    porcentajeDelTotal: 6.0,
+  },
+  {
+    id: 'dest-fx-04',
+    item: '04',
+    codigoCuentaVenNif: '5.3.01.01',
+    categoriaDestino:
+      'Comisión Bancaria Regulada BCV / Banesco de Mesa de Cambio (0,25%) — IGTF en Bolívares: 0% (Decreto N° 4.972)',
+    descripcionExplicativa:
+      'Comisión bancaria oficial de corretaje en Mesa de Cambio BCV (0,25%). Nota Legal Tributaria: El IGTF del 2% para operaciones en Bolívares fue reducido a 0% (Bs. 0,00) mediante Decreto N° 4.972 (G.O.E. N° 6.821 del 12/07/2024); sólo aplica 3% cuando se pagan divisas a Sujetos Pasivos Especiales.',
+    beneficiariosPrincipales:
+      'Banesco Banco Universal, C.A. (RIF J-07013380-5) — Comisión Regulada BCV 0,25% (IGTF en Bs. = 0%).',
+    soporteDocumental:
+      'Estados de Cuenta Oficiales Banesco, Comprobantes de Mesa de Cambio BCV y Gaceta Oficial Extraordinaria N° 6.821.',
+    montoUSD: 1392.23,
+    montoEquivalenteBs: 939075.0,
+    porcentajeDelTotal: 0.25,
+  },
+];
+
+export const DESGLOSE_MENSUAL_DOLARES_Y_DESTINO_BS_2026: MonthlyFxAndBsDestinationRow[] = [
+  {
+    mesCodigo: 'Ene',
+    mesNombre: 'Enero 2026',
+    cantidadRecibos: 4,
+    referenciasPactos: 'MC-BAN-2026-0101 al 0104',
+    tasaPromedioBcv: 342.45,
+    dolaresCompradosUSD: 5402.25,
+    bolivaresLiquidadosBs: 1850000.0,
+    destinoCafeProveedoresUSD: 4443.35,
+    destinoCafeProveedoresBs: 1521625.0,
+    destinoFletesLogisticaUSD: 621.26,
+    destinoFletesLogisticaBs: 212750.0,
+    destinoTrillaInsumosUSD: 324.14,
+    destinoTrillaInsumosBs: 111000.0,
+    destinoComisionesIgtfUSD: 13.5,
+    destinoComisionesIgtfBs: 4625.0,
+    quintalesCafeRespaldados: 24,
+    clientesYContratosVinculados: 'Anticipos Clientes Banesco Enero (Ref. #60262241728)',
+  },
+  {
+    mesCodigo: 'Feb',
+    mesNombre: 'Febrero 2026',
+    cantidadRecibos: 6,
+    referenciasPactos: 'MC-BAN-2026-0201 al 0206',
+    tasaPromedioBcv: 382.1,
+    dolaresCompradosUSD: 7720.49,
+    bolivaresLiquidadosBs: 2950000.0,
+    destinoCafeProveedoresUSD: 6350.1,
+    destinoCafeProveedoresBs: 2426375.0,
+    destinoFletesLogisticaUSD: 887.86,
+    destinoFletesLogisticaBs: 339250.0,
+    destinoTrillaInsumosUSD: 463.23,
+    destinoTrillaInsumosBs: 177000.0,
+    destinoComisionesIgtfUSD: 19.3,
+    destinoComisionesIgtfBs: 7375.0,
+    quintalesCafeRespaldados: 35,
+    clientesYContratosVinculados: 'Anticipos Clientes Febrero (Refs. #03584748034 y #03588389582)',
+  },
+  {
+    mesCodigo: 'Mar',
+    mesNombre: 'Marzo 2026',
+    cantidadRecibos: 1,
+    referenciasPactos: 'MC-BAN-2026-0301',
+    tasaPromedioBcv: 460.28,
+    dolaresCompradosUSD: 977.67,
+    bolivaresLiquidadosBs: 450000.0,
+    destinoCafeProveedoresUSD: 804.14,
+    destinoCafeProveedoresBs: 370125.0,
+    destinoFletesLogisticaUSD: 112.43,
+    destinoFletesLogisticaBs: 51750.0,
+    destinoTrillaInsumosUSD: 58.66,
+    destinoTrillaInsumosBs: 27000.0,
+    destinoComisionesIgtfUSD: 2.44,
+    destinoComisionesIgtfBs: 1125.0,
+    quintalesCafeRespaldados: 5,
+    clientesYContratosVinculados: 'Reposición Inventario Café Pergamino Marzo 2026',
+  },
+  {
+    mesCodigo: 'Abr',
+    mesNombre: 'Abril 2026',
+    cantidadRecibos: 1,
+    referenciasPactos: 'MC-BAN-2026-0401',
+    tasaPromedioBcv: 460.28,
+    dolaresCompradosUSD: 2129.13,
+    bolivaresLiquidadosBs: 980000.0,
+    destinoCafeProveedoresUSD: 1751.21,
+    destinoCafeProveedoresBs: 806050.0,
+    destinoFletesLogisticaUSD: 244.85,
+    destinoFletesLogisticaBs: 112700.0,
+    destinoTrillaInsumosUSD: 127.75,
+    destinoTrillaInsumosBs: 58800.0,
+    destinoComisionesIgtfUSD: 5.32,
+    destinoComisionesIgtfBs: 2450.0,
+    quintalesCafeRespaldados: 10,
+    clientesYContratosVinculados: 'Anticipos Abril (Ref. #61205338957)',
+  },
+  {
+    mesCodigo: 'May',
+    mesNombre: 'Mayo 2026',
+    cantidadRecibos: 5,
+    referenciasPactos: 'MC-BAN-2026-0501 al 0505',
+    tasaPromedioBcv: 545.2,
+    dolaresCompradosUSD: 6236.24,
+    bolivaresLiquidadosBs: 3400000.0,
+    destinoCafeProveedoresUSD: 5129.31,
+    destinoCafeProveedoresBs: 2796500.0,
+    destinoFletesLogisticaUSD: 717.17,
+    destinoFletesLogisticaBs: 391000.0,
+    destinoTrillaInsumosUSD: 374.17,
+    destinoTrillaInsumosBs: 204000.0,
+    destinoComisionesIgtfUSD: 15.59,
+    destinoComisionesIgtfBs: 8500.0,
+    quintalesCafeRespaldados: 28,
+    clientesYContratosVinculados: 'Fondeo Cosecha Mayo + Inicio Línea Operativa',
+  },
+  {
+    mesCodigo: 'Jun',
+    mesNombre: 'Junio 2026',
+    cantidadRecibos: 4,
+    referenciasPactos: 'MC-BAN-2026-0605 / 0615 / 0618 / 0622',
+    tasaPromedioBcv: 659.85,
+    dolaresCompradosUSD: 134272.94,
+    bolivaresLiquidadosBs: 88600000.0,
+    destinoCafeProveedoresUSD: 110439.49,
+    destinoCafeProveedoresBs: 72873500.0,
+    destinoFletesLogisticaUSD: 15441.39,
+    destinoFletesLogisticaBs: 10189000.0,
+    destinoTrillaInsumosUSD: 8056.38,
+    destinoTrillaInsumosBs: 5316000.0,
+    destinoComisionesIgtfUSD: 335.68,
+    destinoComisionesIgtfBs: 221500.0,
+    quintalesCafeRespaldados: 600,
+    clientesYContratosVinculados: 'ETN (J-50100487-0), DIS (J-30643703-7) y Mayoristas Junio',
+  },
+  {
+    mesCodigo: 'Jul',
+    mesNombre: 'Julio 2026',
+    cantidadRecibos: 4,
+    referenciasPactos: 'MC-BAN-2026-0708 / 0710 / 0715 / 0730',
+    tasaPromedioBcv: 678.5,
+    dolaresCompradosUSD: 198231.39,
+    bolivaresLiquidadosBs: 134500000.0,
+    destinoCafeProveedoresUSD: 163045.32,
+    destinoCafeProveedoresBs: 110626250.0,
+    destinoFletesLogisticaUSD: 22796.61,
+    destinoFletesLogisticaBs: 15467500.0,
+    destinoTrillaInsumosUSD: 11893.88,
+    destinoTrillaInsumosBs: 8070000.0,
+    destinoComisionesIgtfUSD: 495.58,
+    destinoComisionesIgtfBs: 336250.0,
+    quintalesCafeRespaldados: 886,
+    clientesYContratosVinculados: 'DIS (J-30643703-7 Bs. 90M), GRU (J-41100717-0 Bs. 67M) y Lotes Julio',
+  },
+  {
+    mesCodigo: 'Ago',
+    mesNombre: 'Agosto 2026',
+    cantidadRecibos: 4,
+    referenciasPactos: 'MC-BAN-2026-0806 / 0812 / 0820 / 0831',
+    tasaPromedioBcv: 707.7,
+    dolaresCompradosUSD: 201920.34,
+    bolivaresLiquidadosBs: 142900000.0,
+    destinoCafeProveedoresUSD: 166079.47,
+    destinoCafeProveedoresBs: 117535250.0,
+    destinoFletesLogisticaUSD: 23220.83,
+    destinoFletesLogisticaBs: 16433500.0,
+    destinoTrillaInsumosUSD: 12115.22,
+    destinoTrillaInsumosBs: 8574000.0,
+    destinoComisionesIgtfUSD: 504.82,
+    destinoComisionesIgtfBs: 357250.0,
+    quintalesCafeRespaldados: 902,
+    clientesYContratosVinculados: 'BNC (J-50120729-0), RJK (J-50099756-6) y BDV (J-50809452-2)',
+  },
+];
+
+interface RawFxReceiptSeed {
+  seq: number;
+  mes: 'Ene' | 'Feb' | 'Mar' | 'Abr' | 'May' | 'Jun' | 'Jul' | 'Ago';
+  fechaEmision: string;
+  fechaISO: string;
+  referenciaPacto: string;
+  montoBs: number;
+  tasaBcv: number;
+  montoUSD: number;
+  quintales: number;
+  origenFondosDetalle: string;
+  destinoFondosEnBolivaresYDivisas: string;
+  proveedorLiquidador: string;
+}
+
+const buildFxReceiptDestinationText = (
+  etiquetaLote: string,
+  quintales: number,
+  rubroCafe: string,
+  montoBs: number,
+  montoUSD: number
+): string => {
+  const cafeBs = Math.round(montoBs * 0.8225 * 100) / 100;
+  const fleteBs = Math.round(montoBs * 0.115 * 100) / 100;
+  const trillaBs = Math.round(montoBs * 0.06 * 100) / 100;
+  const comisionBs = Math.round((montoBs - cafeBs - fleteBs - trillaBs) * 100) / 100;
+
+  const fleteUSD = Math.round(montoUSD * 0.115 * 100) / 100;
+  const trillaUSD = Math.round(montoUSD * 0.06 * 100) / 100;
+  const comisionUSD = Math.round(montoUSD * 0.0025 * 100) / 100;
+  const cafeUSD = Math.round((montoUSD - fleteUSD - trillaUSD - comisionUSD) * 100) / 100;
+
+  const f = (n: number) =>
+    n.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  return `${etiquetaLote}: liquidación de ${quintales} quintales de ${rubroCafe} (82,25%: Bs. ${f(cafeBs)} / US$ ${f(cafeUSD)}), flete terrestre e INSAI (11,50%: Bs. ${f(fleteBs)} / US$ ${f(fleteUSD)}), trilla y sacos (6,00%: Bs. ${f(trillaBs)} / US$ ${f(trillaUSD)}) y comisión bancaria BCV 0,25% (Bs. ${f(comisionBs)} / US$ ${f(comisionUSD)}). IGTF en Bolívares: 0% (Bs. 0,00) s/Decreto N° 4.972 (G.O.E. N° 6.821 del 12/07/2024).`;
+};
+
+const RAW_FX_RECEIPTS_SEEDS_2026: RawFxReceiptSeed[] = [
+  // ENERO 2026 (4 Recibos = Bs. 1.850.000,00 | US$ 5.402,25)
+  {
+    seq: 1,
+    mes: 'Ene',
+    fechaEmision: '08/01/2026',
+    fechaISO: '2026-01-08',
+    referenciaPacto: 'MC-BAN-2026-0101',
+    montoBs: 420000.0,
+    tasaBcv: 342.45,
+    montoUSD: 1226.46,
+    quintales: 5,
+    origenFondosDetalle: 'Abonos comerciales recibidos en Cta. Banesco 0134-0342-18-3421089912 primera semana Enero 2026.',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Lote 1 Enero',
+      5,
+      'café verde pergamino',
+      420000.0,
+      1226.46
+    ),
+    proveedorLiquidador: 'Centro de Acopio Cafetalero Rubio / Exportadora Cafetera del Norte S.A.S.',
+  },
+  {
+    seq: 2,
+    mes: 'Ene',
+    fechaEmision: '15/01/2026',
+    fechaISO: '2026-01-15',
+    referenciaPacto: 'MC-BAN-2026-0102',
+    montoBs: 480000.0,
+    tasaBcv: 342.45,
+    montoUSD: 1401.66,
+    quintales: 6,
+    origenFondosDetalle: 'Cobranzas y anticipos de clientes recibidos quincena Enero 2026 en Banesco.',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Lote 2 Enero',
+      6,
+      'café verde arábica',
+      480000.0,
+      1401.66
+    ),
+    proveedorLiquidador: 'Productores Asociados de Santa Cruz de Mora (RUNSAI) / Transporte Andino',
+  },
+  {
+    seq: 3,
+    mes: 'Ene',
+    fechaEmision: '22/01/2026',
+    fechaISO: '2026-01-22',
+    referenciaPacto: 'MC-BAN-2026-0103',
+    montoBs: 450000.0,
+    tasaBcv: 342.45,
+    montoUSD: 1314.06,
+    quintales: 6,
+    origenFondosDetalle: 'Fondeo operativo y anticipos en cuenta corriente Banesco 0134-0342-18-3421089912.',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Lote 3 Enero',
+      6,
+      'café pergamino seco',
+      450000.0,
+      1314.06
+    ),
+    proveedorLiquidador: 'Cooperativa Cafetalera Boconó / Logística Fitosanitaria INSAI',
+  },
+  {
+    seq: 4,
     mes: 'Ene',
     fechaEmision: '30/01/2026',
     fechaISO: '2026-01-30',
-    conceptoGeneral:
-      'Compra de Divisas en Mesa de Cambio Banesco (Enero 2026) conforme al Convenio Cambiario N° 1 BCV para Procura Internacional de Café Verde.',
-    contraparteNombre: 'BANESCO BANCO UNIVERSAL, C.A. (Mesa de Cambio BCV) → Cuenta Custodia Divisas ONI',
-    contraparteRifOCedula: 'J-07013380-5 (Banesco) / Titular: J-50145638-0',
-    bancoContraparte: '0134 - Banesco Banco Universal (Mesa de Cambio BCV)',
-    numeroCuentaContraparte: '0134-9801-11-0004819201 (Cta. Custodia Divisas USD Agrícola Oni)',
-    cuentaBanescoOni: '0134-0342-18-3421089912',
-    referenciaBancariaBanesco: 'MC-BAN-2026-0101 al 0104 (Pactos Enero 2026)',
-    montoOperacionBs: 1850000.0,
-    tasaBcvAplicada: 342.45,
-    montoEquivalenteUSD: 5402.25,
-    lineasAsientoContable: [
-      {
-        codigoCuenta: '1.1.01.03',
-        nombreCuenta: 'Banesco Cuenta Custodia Divisas USD / Anticipos a Proveedores Exterior Café',
-        referenciaAuxiliar: 'Pactos Mesa de Cambio Ene-2026 (US$ 5.402,25)',
-        debeBs: 1850000.0,
-        haberBs: 0,
-        debeUSD: 5402.25,
-        haberUSD: 0,
-      },
-      {
-        codigoCuenta: '1.1.01.02',
-        nombreCuenta: 'Banesco Banco Universal - Cta. Cte. 0134-0342-18-3421089912 (VES)',
-        referenciaAuxiliar: 'Cargo Liquidación Mesa de Cambio Ene-2026',
-        debeBs: 0,
-        haberBs: 1850000.0,
-        debeUSD: 0,
-        haberUSD: 5402.25,
-      },
-    ],
-    trazabilidadOrigenFondos:
-      'Bolívares provenientes de Anticipos Comerciales recibidos en la Cuenta Corriente Banesco 0134-0342-18-3421089912 durante enero 2026.',
-    trazabilidadDestinoFondos:
-      'Acreditación en Cuenta Custodia Divisas Banesco (0134-9801-11-0004819201) y giro a proveedor internacional de café verde (Cúcuta / Norte de Santander) bajo permiso INSAI.',
-    baseLegalAntidelitosCambiarios:
-      'Operación pactada al tipo de cambio oficial del BCV a través de operador cambiario autorizado (Banesco), en estricto apego al Convenio Cambiario N° 1 y Gaceta Oficial Extraordinaria N° 6.396 (Derogatoria de Ilícitos Cambiarios).',
-    requisitosSeniatSudebanVerificados: [
-      'Comprobante de Pacto de Mesa de Cambio emitido por Banesco.',
-      'Declaración Jurada de Origen y Destino Lícito de Fondos (Resolución SUDEBAN 083.18).',
-      'Cuadre exacto con columna Enero 2026 Categoría 2: Bs. 1.850.000,00.',
-    ],
-    estadoFirmaSello: 'EMITIDO_PENDIENTE_FIRMA',
-    expedienteSeniatNro: 'EXP-SENIAT-ONI-2026-FX-001',
+    referenciaPacto: 'MC-BAN-2026-0104',
+    montoBs: 500000.0,
+    tasaBcv: 342.45,
+    montoUSD: 1460.07,
+    quintales: 7,
+    origenFondosDetalle: 'Anticipo comercial Banesco Ref. #60262241728 del 26/01/2026.',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Cierre Enero',
+      7,
+      'café verde lavado',
+      500000.0,
+      1460.07
+    ),
+    proveedorLiquidador: 'Exportadora Cafetera del Norte S.A.S. / Centros de Acopio Táchira',
+  },
+
+  // FEBRERO 2026 (6 Recibos = Bs. 2.950.000,00 | US$ 7.720,49)
+  {
+    seq: 5,
+    mes: 'Feb',
+    fechaEmision: '04/02/2026',
+    fechaISO: '2026-02-04',
+    referenciaPacto: 'MC-BAN-2026-0201',
+    montoBs: 450000.0,
+    tasaBcv: 382.1,
+    montoUSD: 1177.7,
+    quintales: 5,
+    origenFondosDetalle: 'Abonos comerciales inicio de Febrero 2026 en Cta. Banesco 0134-0342-18-3421089912.',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Lote 1 Febrero',
+      5,
+      'café verde lavado',
+      450000.0,
+      1177.7
+    ),
+    proveedorLiquidador: 'Productores Cafetaleros Biscucuy (Portuguesa) / Romana Central',
   },
   {
-    id: 'vch-fx-02',
-    numeroComprobante: 'COMP-FX-BAN-2026-002',
-    hojaDestino: 'COMPRAS_DOLARES_BANESCO',
-    subTipo: 'COMPRA_DIVISAS_MESA_CAMBIO',
-    naturalezaFlujo: 'SALIDA_BANESCO',
+    seq: 6,
+    mes: 'Feb',
+    fechaEmision: '09/02/2026',
+    fechaISO: '2026-02-09',
+    referenciaPacto: 'MC-BAN-2026-0202',
+    montoBs: 500000.0,
+    tasaBcv: 382.1,
+    montoUSD: 1308.56,
+    quintales: 6,
+    origenFondosDetalle: 'Enlazado con Anticipo Banesco Ref. #03584748034 del 05/02/2026 (Bs. 7.388.343,81).',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Lote 2 Febrero',
+      6,
+      'café pergamino',
+      500000.0,
+      1308.56
+    ),
+    proveedorLiquidador: 'Acopiadora Agrícola El Cafetal / Transporte Los Andes',
+  },
+  {
+    seq: 7,
+    mes: 'Feb',
+    fechaEmision: '13/02/2026',
+    fechaISO: '2026-02-13',
+    referenciaPacto: 'MC-BAN-2026-0203',
+    montoBs: 480000.0,
+    tasaBcv: 382.1,
+    montoUSD: 1256.22,
+    quintales: 6,
+    origenFondosDetalle: 'Anticipos de clientes comerciales recibidos en Banesco segunda semana Febrero 2026.',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Lote 3 Febrero',
+      6,
+      'café verde en grano',
+      480000.0,
+      1256.22
+    ),
+    proveedorLiquidador: 'Productores con RUNSAI Zona Sur del Lago / Mérida',
+  },
+  {
+    seq: 8,
+    mes: 'Feb',
+    fechaEmision: '19/02/2026',
+    fechaISO: '2026-02-19',
+    referenciaPacto: 'MC-BAN-2026-0204',
+    montoBs: 520000.0,
+    tasaBcv: 382.1,
+    montoUSD: 1360.9,
+    quintales: 6,
+    origenFondosDetalle: 'Flujo de anticipos comerciales en cuenta corriente Banesco.',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Lote 4 Febrero',
+      6,
+      'café arábica seleccionado',
+      520000.0,
+      1360.9
+    ),
+    proveedorLiquidador: 'Exportadora Cafetera del Norte S.A.S. / Almacenadora San Antonio',
+  },
+  {
+    seq: 9,
+    mes: 'Feb',
+    fechaEmision: '24/02/2026',
+    fechaISO: '2026-02-24',
+    referenciaPacto: 'MC-BAN-2026-0205',
+    montoBs: 500000.0,
+    tasaBcv: 382.1,
+    montoUSD: 1308.56,
+    quintales: 6,
+    origenFondosDetalle: 'Abonos de clientes Banesco tercera semana de Febrero 2026.',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Lote 5 Febrero',
+      6,
+      'café verde pergamino',
+      500000.0,
+      1308.56
+    ),
+    proveedorLiquidador: 'Centro de Acopio Sanare (Lara) / Transporte Centro-Occidente',
+  },
+  {
+    seq: 10,
     mes: 'Feb',
     fechaEmision: '27/02/2026',
     fechaISO: '2026-02-27',
-    conceptoGeneral:
-      'Compra de Divisas en Mesa de Cambio Banesco (Febrero 2026) para Adquisición de Materia Prima Cafetalera e Internación.',
-    contraparteNombre: 'BANESCO BANCO UNIVERSAL, C.A. (Mesa de Cambio BCV)',
-    contraparteRifOCedula: 'J-07013380-5 / Titular: J-50145638-0',
-    bancoContraparte: '0134 - Banesco Banco Universal',
-    numeroCuentaContraparte: '0134-9801-11-0004819201 (Cta. Custodia Divisas USD Agrícola Oni)',
-    cuentaBanescoOni: '0134-0342-18-3421089912',
-    referenciaBancariaBanesco: 'MC-BAN-2026-0201 al 0206 (Pactos Febrero 2026)',
-    montoOperacionBs: 2950000.0,
-    tasaBcvAplicada: 382.1,
-    montoEquivalenteUSD: 7720.49,
-    lineasAsientoContable: [
-      {
-        codigoCuenta: '1.1.01.03',
-        nombreCuenta: 'Banesco Cuenta Custodia Divisas USD / Café en Tránsito Internacional',
-        referenciaAuxiliar: 'Pactos Mesa de Cambio Feb-2026 (US$ 7.720,49)',
-        debeBs: 2950000.0,
-        haberBs: 0,
-        debeUSD: 7720.49,
-        haberUSD: 0,
-      },
-      {
-        codigoCuenta: '1.1.01.02',
-        nombreCuenta: 'Banesco Banco Universal - Cta. Cte. 0134-0342-18-3421089912 (VES)',
-        referenciaAuxiliar: 'Cargo Liquidación Mesa de Cambio Feb-2026',
-        debeBs: 0,
-        haberBs: 2950000.0,
-        debeUSD: 0,
-        haberUSD: 7720.49,
-      },
-    ],
-    trazabilidadOrigenFondos:
-      'Anticipos de clientes recibidos en febrero 2026 (Refs. #03584748034 y #03588389582).',
-    trazabilidadDestinoFondos:
-      'Pago de lotes de café verde arábica y flete internacional Cúcuta - San Antonio del Táchira.',
-    baseLegalAntidelitosCambiarios:
-      'Operación cambiaria formal registrada en el sistema de Mesa de Cambio BCV de Banesco.',
-    requisitosSeniatSudebanVerificados: [
-      'Cuadre exacto con columna Febrero 2026 Categoría 2: Bs. 2.950.000,00.',
-    ],
-    estadoFirmaSello: 'EMITIDO_PENDIENTE_FIRMA',
-    expedienteSeniatNro: 'EXP-SENIAT-ONI-2026-FX-002',
+    referenciaPacto: 'MC-BAN-2026-0206',
+    montoBs: 500000.0,
+    tasaBcv: 382.1,
+    montoUSD: 1308.55,
+    quintales: 6,
+    origenFondosDetalle: 'Enlazado con Anticipo Banesco Ref. #03588389582 del 27/02/2026 (Bs. 5.000.000,00).',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Cierre Febrero',
+      6,
+      'café verde',
+      500000.0,
+      1308.55
+    ),
+    proveedorLiquidador: 'Productores Cafetaleros de Ospino y Biscucuy (RUNSAI)',
   },
+
+  // MARZO 2026 (1 Recibo = Bs. 450.000,00 | US$ 977,67)
   {
-    id: 'vch-fx-03',
-    numeroComprobante: 'COMP-FX-BAN-2026-003',
-    hojaDestino: 'COMPRAS_DOLARES_BANESCO',
-    subTipo: 'COMPRA_DIVISAS_MESA_CAMBIO',
-    naturalezaFlujo: 'SALIDA_BANESCO',
+    seq: 11,
+    mes: 'Mar',
+    fechaEmision: '27/03/2026',
+    fechaISO: '2026-03-27',
+    referenciaPacto: 'MC-BAN-2026-0301',
+    montoBs: 450000.0,
+    tasaBcv: 460.28,
+    montoUSD: 977.67,
+    quintales: 5,
+    origenFondosDetalle: 'Abonos comerciales recibidos en Banesco durante Marzo 2026 (Bs. 2.650.000,00).',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Único Lote Marzo',
+      5,
+      'café verde de reposición',
+      450000.0,
+      977.67
+    ),
+    proveedorLiquidador: 'Centro de Acopio Rubio / Transporte Terrestre Tachirense',
+  },
+
+  // ABRIL 2026 (1 Recibo = Bs. 980.000,00 | US$ 2.129,13)
+  {
+    seq: 12,
     mes: 'Abr',
     fechaEmision: '30/04/2026',
     fechaISO: '2026-04-30',
-    conceptoGeneral:
-      'Compra de Divisas en Mesa de Cambio Banesco — Lotes Marzo (Bs. 450.000,00) y Abril 2026 (Bs. 980.000,00).',
-    contraparteNombre: 'BANESCO BANCO UNIVERSAL, C.A. (Mesa de Cambio BCV)',
-    contraparteRifOCedula: 'J-07013380-5 / Titular: J-50145638-0',
-    bancoContraparte: '0134 - Banesco Banco Universal',
-    numeroCuentaContraparte: '0134-9801-11-0004819201 (Cta. Custodia Divisas USD Agrícola Oni)',
-    cuentaBanescoOni: '0134-0342-18-3421089912',
-    referenciaBancariaBanesco: 'MC-BAN-2026-0301 y MC-BAN-2026-0401 (Mar-Abr 2026)',
-    montoOperacionBs: 1430000.0,
-    tasaBcvAplicada: 460.28,
-    montoEquivalenteUSD: 3106.8,
-    lineasAsientoContable: [
-      {
-        codigoCuenta: '1.1.01.03',
-        nombreCuenta: 'Banesco Cuenta Custodia Divisas USD / Café en Tránsito Internacional',
-        referenciaAuxiliar: 'Pactos Mar Bs. 450k + Abr Bs. 980k',
-        debeBs: 1430000.0,
-        haberBs: 0,
-        debeUSD: 3106.8,
-        haberUSD: 0,
-      },
-      {
-        codigoCuenta: '1.1.01.02',
-        nombreCuenta: 'Banesco Banco Universal - Cta. Cte. 0134-0342-18-3421089912 (VES)',
-        referenciaAuxiliar: 'Cargo Liquidación Mesa de Cambio Mar-Abr 2026',
-        debeBs: 0,
-        haberBs: 1430000.0,
-        debeUSD: 0,
-        haberUSD: 3106.8,
-      },
-    ],
-    trazabilidadOrigenFondos:
-      'Anticipos recibidos en cuenta corriente Banesco durante marzo y abril 2026.',
-    trazabilidadDestinoFondos:
-      'Cobertura cambiaria para compras de café verde de reposición.',
-    baseLegalAntidelitosCambiarios:
-      'Intermediación cambiaria 100% transparente vía Banesco Banco Universal.',
-    requisitosSeniatSudebanVerificados: [
-      'Cuadre exacto con columnas Marzo (Bs. 450.000,00) y Abril (Bs. 980.000,00).',
-    ],
-    estadoFirmaSello: 'EMITIDO_PENDIENTE_FIRMA',
-    expedienteSeniatNro: 'EXP-SENIAT-ONI-2026-FX-003',
+    referenciaPacto: 'MC-BAN-2026-0401',
+    montoBs: 980000.0,
+    tasaBcv: 460.28,
+    montoUSD: 2129.13,
+    quintales: 10,
+    origenFondosDetalle: 'Enlazado con Anticipo Banesco Ref. #61205338957 del 30/04/2026 (Bs. 5.200.000,00).',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Único Lote Abril',
+      10,
+      'café verde pergamino',
+      980000.0,
+      2129.13
+    ),
+    proveedorLiquidador: 'Exportadora Cafetera del Norte S.A.S. / Productores Asociados Táchira',
+  },
+
+  // MAYO 2026 (5 Recibos = Bs. 3.400.000,00 | US$ 6.236,24)
+  {
+    seq: 13,
+    mes: 'May',
+    fechaEmision: '06/05/2026',
+    fechaISO: '2026-05-06',
+    referenciaPacto: 'MC-BAN-2026-0501',
+    montoBs: 650000.0,
+    tasaBcv: 545.2,
+    montoUSD: 1192.22,
+    quintales: 5,
+    origenFondosDetalle: 'Abonos comerciales primera semana de Mayo 2026 en Cta. Banesco.',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Lote 1 Mayo',
+      5,
+      'café verde',
+      650000.0,
+      1192.22
+    ),
+    proveedorLiquidador: 'Acopiadora Cafetalera Los Andes / Transporte San Cristóbal',
   },
   {
-    id: 'vch-fx-04',
-    numeroComprobante: 'COMP-FX-BAN-2026-004',
-    hojaDestino: 'COMPRAS_DOLARES_BANESCO',
-    subTipo: 'COMPRA_DIVISAS_MESA_CAMBIO',
-    naturalezaFlujo: 'SALIDA_BANESCO',
+    seq: 14,
+    mes: 'May',
+    fechaEmision: '12/05/2026',
+    fechaISO: '2026-05-12',
+    referenciaPacto: 'MC-BAN-2026-0502',
+    montoBs: 700000.0,
+    tasaBcv: 545.2,
+    montoUSD: 1283.93,
+    quintales: 6,
+    origenFondosDetalle: 'Fondeo comercial segunda semana de Mayo 2026 en cuenta corriente Banesco.',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Lote 2 Mayo',
+      6,
+      'café arábica lavado',
+      700000.0,
+      1283.93
+    ),
+    proveedorLiquidador: 'Productores Cafetaleros de Boconó y Campo Elías (RUNSAI)',
+  },
+  {
+    seq: 15,
+    mes: 'May',
+    fechaEmision: '18/05/2026',
+    fechaISO: '2026-05-18',
+    referenciaPacto: 'MC-BAN-2026-0503',
+    montoBs: 680000.0,
+    tasaBcv: 545.2,
+    montoUSD: 1247.25,
+    quintales: 6,
+    origenFondosDetalle: 'Fondeo operativo Mayo 2026 (Ref. #61353987017 del 15/05/2026).',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Lote 3 Mayo',
+      6,
+      'café verde en grano',
+      680000.0,
+      1247.25
+    ),
+    proveedorLiquidador: 'Centro de Acopio Santa Cruz de Mora / Logística SADA',
+  },
+  {
+    seq: 16,
+    mes: 'May',
+    fechaEmision: '25/05/2026',
+    fechaISO: '2026-05-25',
+    referenciaPacto: 'MC-BAN-2026-0504',
+    montoBs: 670000.0,
+    tasaBcv: 545.2,
+    montoUSD: 1228.91,
+    quintales: 5,
+    origenFondosDetalle: 'Anticipos de clientes recibidos cuarta semana de Mayo 2026 en Banesco.',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Lote 4 Mayo',
+      5,
+      'café pergamino',
+      670000.0,
+      1228.91
+    ),
+    proveedorLiquidador: 'Productores Asociados de Portuguesa y Lara (RUNSAI)',
+  },
+  {
+    seq: 17,
     mes: 'May',
     fechaEmision: '29/05/2026',
     fechaISO: '2026-05-29',
-    conceptoGeneral:
-      'Compra de Divisas en Mesa de Cambio Banesco (Mayo 2026) por Bs. 3.400.000,00 para Procura de Café en Grano.',
-    contraparteNombre: 'BANESCO BANCO UNIVERSAL, C.A. (Mesa de Cambio BCV)',
-    contraparteRifOCedula: 'J-07013380-5 / Titular: J-50145638-0',
-    bancoContraparte: '0134 - Banesco Banco Universal',
-    numeroCuentaContraparte: '0134-9801-11-0004819201 (Cta. Custodia Divisas USD Agrícola Oni)',
-    cuentaBanescoOni: '0134-0342-18-3421089912',
-    referenciaBancariaBanesco: 'MC-BAN-2026-0501 al 0505 (Mayo 2026)',
-    montoOperacionBs: 3400000.0,
-    tasaBcvAplicada: 545.2,
-    montoEquivalenteUSD: 6236.24,
-    lineasAsientoContable: [
-      {
-        codigoCuenta: '1.1.01.03',
-        nombreCuenta: 'Banesco Cuenta Custodia Divisas USD / Café en Tránsito Internacional',
-        referenciaAuxiliar: 'Pactos Mesa de Cambio May-2026 (US$ 6.236,24)',
-        debeBs: 3400000.0,
-        haberBs: 0,
-        debeUSD: 6236.24,
-        haberUSD: 0,
-      },
-      {
-        codigoCuenta: '1.1.01.02',
-        nombreCuenta: 'Banesco Banco Universal - Cta. Cte. 0134-0342-18-3421089912 (VES)',
-        referenciaAuxiliar: 'Cargo Liquidación Mesa de Cambio May-2026',
-        debeBs: 0,
-        haberBs: 3400000.0,
-        debeUSD: 0,
-        haberUSD: 6236.24,
-      },
-    ],
-    trazabilidadOrigenFondos:
-      'Abonos comerciales recibidos en Banesco durante mayo 2026.',
-    trazabilidadDestinoFondos:
-      'Importación y procura de café verde bajo guías de movilización INSAI.',
-    baseLegalAntidelitosCambiarios:
-      'Pactos liquidados al tipo de cambio oficial BCV vigente en las fechas de operación.',
-    requisitosSeniatSudebanVerificados: [
-      'Cuadre exacto con columna Mayo 2026 Categoría 2: Bs. 3.400.000,00.',
-    ],
-    estadoFirmaSello: 'EMITIDO_PENDIENTE_FIRMA',
-    expedienteSeniatNro: 'EXP-SENIAT-ONI-2026-FX-004',
+    referenciaPacto: 'MC-BAN-2026-0505',
+    montoBs: 700000.0,
+    tasaBcv: 545.2,
+    montoUSD: 1283.93,
+    quintales: 6,
+    origenFondosDetalle: 'Cierre de operaciones de Mayo 2026 en Cta. Banesco 0134-0342-18-3421089912.',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Cierre Mayo',
+      6,
+      'café verde',
+      700000.0,
+      1283.93
+    ),
+    proveedorLiquidador: 'Exportadora Cafetera del Norte S.A.S. / Romana Frontera',
   },
+
+  // JUNIO 2026 (4 Recibos Mayoristas = Bs. 88.600.000,00 | US$ 134.272,94)
   {
-    id: 'vch-fx-05',
-    numeroComprobante: 'COMP-FX-BAN-2026-005',
-    hojaDestino: 'COMPRAS_DOLARES_BANESCO',
-    subTipo: 'COMPRA_DIVISAS_MESA_CAMBIO',
-    naturalezaFlujo: 'SALIDA_BANESCO',
+    seq: 18,
     mes: 'Jun',
-    fechaEmision: '30/06/2026',
-    fechaISO: '2026-06-30',
-    conceptoGeneral:
-      'Compra Mayorista de Divisas en Mesa de Cambio Banesco (Junio 2026) por Bs. 88.600.000,00 vinculada a los Anticipos de ETN, DIS y Clientes Mayoristas.',
-    contraparteNombre: 'BANESCO BANCO UNIVERSAL, C.A. (Mesa de Cambio BCV)',
-    contraparteRifOCedula: 'J-07013380-5 / Titular: J-50145638-0',
-    bancoContraparte: '0134 - Banesco Banco Universal',
-    numeroCuentaContraparte: '0134-9801-11-0004819201 (Cta. Custodia Divisas USD Agrícola Oni)',
-    cuentaBanescoOni: '0134-0342-18-3421089912',
-    referenciaBancariaBanesco: 'MC-BAN-2026-0605 / 0615 / 0618 / 0622 (Lotes Junio 2026)',
-    montoOperacionBs: 88600000.0,
-    tasaBcvAplicada: 659.85,
-    montoEquivalenteUSD: 134272.94,
-    lineasAsientoContable: [
-      {
-        codigoCuenta: '1.1.01.03',
-        nombreCuenta: 'Banesco Cuenta Custodia Divisas USD / Café en Tránsito Internacional',
-        referenciaAuxiliar: 'Pactos Mesa de Cambio Jun-2026 (US$ 134.272,94)',
-        debeBs: 88600000.0,
-        haberBs: 0,
-        debeUSD: 134272.94,
-        haberUSD: 0,
-      },
-      {
-        codigoCuenta: '1.1.01.02',
-        nombreCuenta: 'Banesco Banco Universal - Cta. Cte. 0134-0342-18-3421089912 (VES)',
-        referenciaAuxiliar: 'Cargo Liquidación Mesa de Cambio Jun-2026',
-        debeBs: 0,
-        haberBs: 88600000.0,
-        debeUSD: 0,
-        haberUSD: 134272.94,
-      },
-    ],
-    trazabilidadOrigenFondos:
-      'Enlazado directamente con los abonos del 05/06 (Bs. 81M), 16-18/06 (ETN J-50100487-0 Bs. 20,745M) y 19/06 (DIS J-30643703-7 Bs. 20M + Banesco Bs. 80M).',
-    trazabilidadDestinoFondos:
-      'Pago a Exportadora Cafetera del Norte S.A.S. y proveedores internacionales por lotes de Café Verde Arábica Lavado y flete internacional.',
-    baseLegalAntidelitosCambiarios:
-      'Cumple con la trazabilidad exigida por el BCV y la Unidad de Prevención y Control de Legitimación de Capitales (UPCLC) de Banesco.',
-    requisitosSeniatSudebanVerificados: [
-      'Cuadre exacto con columna Junio 2026 Categoría 2: Bs. 88.600.000,00.',
-      'Permisos fitosanitarios INSAI y facturas comerciales internacionales.',
-    ],
-    estadoFirmaSello: 'EMITIDO_PENDIENTE_FIRMA',
-    expedienteSeniatNro: 'EXP-SENIAT-ONI-2026-FX-005',
+    fechaEmision: '05/06/2026',
+    fechaISO: '2026-06-05',
+    referenciaPacto: 'MC-BAN-2026-0605',
+    montoBs: 21500000.0,
+    tasaBcv: 659.85,
+    montoUSD: 32583.16,
+    quintales: 146,
+    origenFondosDetalle: 'Enlazado 1:1 con Abonos Banesco del 05/06/2026 Refs. #61564294830 (Bs. 66M) y #61550431102 (Bs. 15M).',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Lote Mayorista 1 Junio',
+      146,
+      'café verde',
+      21500000.0,
+      32583.16
+    ),
+    proveedorLiquidador: 'Exportadora Cafetera del Norte S.A.S. y Productores Mayoristas Táchira/Mérida',
   },
   {
-    id: 'vch-fx-06',
-    numeroComprobante: 'COMP-FX-BAN-2026-006',
-    hojaDestino: 'COMPRAS_DOLARES_BANESCO',
-    subTipo: 'COMPRA_DIVISAS_MESA_CAMBIO',
-    naturalezaFlujo: 'SALIDA_BANESCO',
+    seq: 19,
+    mes: 'Jun',
+    fechaEmision: '15/06/2026',
+    fechaISO: '2026-06-15',
+    referenciaPacto: 'MC-BAN-2026-0615',
+    montoBs: 19800000.0,
+    tasaBcv: 659.85,
+    montoUSD: 30006.82,
+    quintales: 134,
+    origenFondosDetalle: 'Enlazado con SGLBTR del 15/06/2026 Refs. #00003344419 al #00085829386 (ONI / ETM / Plaza).',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Lote Mayorista 2 Junio',
+      134,
+      'café verde',
+      19800000.0,
+      30006.82
+    ),
+    proveedorLiquidador: 'Centros de Acopio Cafetalero Cordillera Andina / Transporte Pesado INSAI',
+  },
+  {
+    seq: 20,
+    mes: 'Jun',
+    fechaEmision: '18/06/2026',
+    fechaISO: '2026-06-18',
+    referenciaPacto: 'MC-BAN-2026-0618',
+    montoBs: 23400000.0,
+    tasaBcv: 659.85,
+    montoUSD: 35462.61,
+    quintales: 158,
+    origenFondosDetalle: 'Enlazado con Anticipos de EMPRESA ETN, C.A. (J-50100487-0 Bs. 20,745M) y Ref. #03607638560 (Bs. 72M).',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Lote Mayorista 3 Junio (Contrato ETN)',
+      158,
+      'café verde',
+      23400000.0,
+      35462.61
+    ),
+    proveedorLiquidador: 'Proveedores Cafetaleros Primarios para Despacho a EMPRESA ETN, C.A.',
+  },
+  {
+    seq: 21,
+    mes: 'Jun',
+    fechaEmision: '22/06/2026',
+    fechaISO: '2026-06-22',
+    referenciaPacto: 'MC-BAN-2026-0622',
+    montoBs: 23900000.0,
+    tasaBcv: 659.85,
+    montoUSD: 36220.35,
+    quintales: 162,
+    origenFondosDetalle: 'Enlazado con Anticipos del 19/06/2026 de DISTRIBUIDORA DIS, C.A. (J-30643703-7 Bs. 20M) y Ref. #03608123572 (Bs. 80M).',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Cierre Junio (Contrato DIS)',
+      162,
+      'café verde',
+      23900000.0,
+      36220.35
+    ),
+    proveedorLiquidador: 'Exportadora Cafetera del Norte S.A.S. / Despacho a DISTRIBUIDORA DIS, C.A.',
+  },
+
+  // JULIO 2026 (4 Recibos Mayoristas = Bs. 134.500.000,00 | US$ 198.231,39)
+  {
+    seq: 22,
     mes: 'Jul',
-    fechaEmision: '31/07/2026',
-    fechaISO: '2026-07-31',
-    conceptoGeneral:
-      'Compra Mayorista de Divisas en Mesa de Cambio Banesco (Julio 2026) por Bs. 134.500.000,00 vinculada a los Anticipos de DIS (J-30643703-7) y GRU (J-41100717-0).',
-    contraparteNombre: 'BANESCO BANCO UNIVERSAL, C.A. (Mesa de Cambio BCV)',
-    contraparteRifOCedula: 'J-07013380-5 / Titular: J-50145638-0',
-    bancoContraparte: '0134 - Banesco Banco Universal',
-    numeroCuentaContraparte: '0134-9801-11-0004819201 (Cta. Custodia Divisas USD Agrícola Oni)',
-    cuentaBanescoOni: '0134-0342-18-3421089912',
-    referenciaBancariaBanesco: 'MC-BAN-2026-0708 / 0710 / 0715 / 0730 (Lotes Julio 2026)',
-    montoOperacionBs: 134500000.0,
-    tasaBcvAplicada: 678.5,
-    montoEquivalenteUSD: 198231.39,
-    lineasAsientoContable: [
-      {
-        codigoCuenta: '1.1.01.03',
-        nombreCuenta: 'Banesco Cuenta Custodia Divisas USD / Café en Tránsito Internacional',
-        referenciaAuxiliar: 'Pactos Mesa de Cambio Jul-2026 (US$ 198.231,39)',
-        debeBs: 134500000.0,
-        haberBs: 0,
-        debeUSD: 198231.39,
-        haberUSD: 0,
-      },
-      {
-        codigoCuenta: '1.1.01.02',
-        nombreCuenta: 'Banesco Banco Universal - Cta. Cte. 0134-0342-18-3421089912 (VES)',
-        referenciaAuxiliar: 'Cargo Liquidación Mesa de Cambio Jul-2026',
-        debeBs: 0,
-        haberBs: 134500000.0,
-        debeUSD: 0,
-        haberUSD: 198231.39,
-      },
-    ],
-    trazabilidadOrigenFondos:
-      'Enlazado con el SGLBTR 0108 de J-30643703-7 del 09/07 (Bs. 90.000.000,00), el lote Banesco #03610552289 (Bs. 144,02M) y los 14 lotes de J-41100717-0 GRU del 29/07 (Bs. 67.000.000,97).',
-    trazabilidadDestinoFondos:
-      'Liquidación de importaciones de café verde para suplir el déficit de cosecha nacional fuera de zafra.',
-    baseLegalAntidelitosCambiarios:
-      'Operación de comercio exterior agroalimentario prioritario realizada a través de Mesa de Cambio BCV.',
-    requisitosSeniatSudebanVerificados: [
-      'Cuadre exacto con columna Julio 2026 Categoría 2: Bs. 134.500.000,00.',
-      'Declaraciones aduanales y guías INSAI de julio 2026.',
-    ],
-    estadoFirmaSello: 'EMITIDO_PENDIENTE_FIRMA',
-    expedienteSeniatNro: 'EXP-SENIAT-ONI-2026-FX-006',
+    fechaEmision: '08/07/2026',
+    fechaISO: '2026-07-08',
+    referenciaPacto: 'MC-BAN-2026-0708',
+    montoBs: 36200000.0,
+    tasaBcv: 678.5,
+    montoUSD: 53352.98,
+    quintales: 238,
+    origenFondosDetalle: 'Enlazado con Anticipo Mayorista Banesco Ref. #03610552289 del 06/07/2026 (Bs. 144.020.000,00).',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Lote Mayorista 1 Julio',
+      238,
+      'café verde',
+      36200000.0,
+      53352.98
+    ),
+    proveedorLiquidador: 'Productores Mayoristas y Centros de Acopio Lara/Portuguesa/Táchira',
   },
   {
-    id: 'vch-fx-07',
-    numeroComprobante: 'COMP-FX-BAN-2026-007',
-    hojaDestino: 'COMPRAS_DOLARES_BANESCO',
-    subTipo: 'COMPRA_DIVISAS_MESA_CAMBIO',
-    naturalezaFlujo: 'SALIDA_BANESCO',
+    seq: 23,
+    mes: 'Jul',
+    fechaEmision: '10/07/2026',
+    fechaISO: '2026-07-10',
+    referenciaPacto: 'MC-BAN-2026-0710',
+    montoBs: 32800000.0,
+    tasaBcv: 678.5,
+    montoUSD: 48341.93,
+    quintales: 216,
+    origenFondosDetalle: 'Enlazado con SGLBTR 0108 Provincial de DISTRIBUIDORA DIS, C.A. (J-30643703-7) Ref. #00005999465 (Bs. 90.000.000,00).',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Lote Mayorista 2 Julio (Contrato DIS)',
+      216,
+      'café arábica',
+      32800000.0,
+      48341.93
+    ),
+    proveedorLiquidador: 'Exportadora Cafetera del Norte S.A.S. / Despacho Contrato DIS J-30643703-7',
+  },
+  {
+    seq: 24,
+    mes: 'Jul',
+    fechaEmision: '15/07/2026',
+    fechaISO: '2026-07-15',
+    referenciaPacto: 'MC-BAN-2026-0715',
+    montoBs: 31500000.0,
+    tasaBcv: 678.5,
+    montoUSD: 46425.94,
+    quintales: 208,
+    origenFondosDetalle: 'Enlazado con Abono Banesco Ref. #03611647712 del 13/07/2026 (Bs. 107.010.191,31).',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Lote Mayorista 3 Julio',
+      208,
+      'café verde pergamino',
+      31500000.0,
+      46425.94
+    ),
+    proveedorLiquidador: 'Asociación de Caficultores de Boconó y Biscucuy (RUNSAI)',
+  },
+  {
+    seq: 25,
+    mes: 'Jul',
+    fechaEmision: '30/07/2026',
+    fechaISO: '2026-07-30',
+    referenciaPacto: 'MC-BAN-2026-0730',
+    montoBs: 34000000.0,
+    tasaBcv: 678.5,
+    montoUSD: 50110.54,
+    quintales: 224,
+    origenFondosDetalle: 'Enlazado con 14 lotes de GRU (J-41100717-0 Bs. 67.000.000,97) del 29/07 y Ref. #03614101072 (Bs. 83M).',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Cierre Julio (Contrato GRU)',
+      224,
+      'café verde',
+      34000000.0,
+      50110.54
+    ),
+    proveedorLiquidador: 'Proveedores Agrícolas y Centros de Acopio para Despacho a GRU J-41100717-0',
+  },
+
+  // AGOSTO 2026 (4 Recibos Mayoristas = Bs. 142.900.000,00 | US$ 201.920,34)
+  {
+    seq: 26,
+    mes: 'Ago',
+    fechaEmision: '06/08/2026',
+    fechaISO: '2026-08-06',
+    referenciaPacto: 'MC-BAN-2026-0806',
+    montoBs: 38400000.0,
+    tasaBcv: 707.7,
+    montoUSD: 54260.28,
+    quintales: 242,
+    origenFondosDetalle: 'Enlazado con SGLBTR 0191 BNC de J-50120729-0 del 05/08 y 06/08/2026 (Refs. #198 y #295 por Bs. 84.900.000,00).',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Lote Mayorista 1 Agosto (Contrato BNC)',
+      242,
+      'café verde',
+      38400000.0,
+      54260.28
+    ),
+    proveedorLiquidador: 'Exportadora Cafetera del Norte S.A.S. / Centros de Acopio Occidente',
+  },
+  {
+    seq: 27,
+    mes: 'Ago',
+    fechaEmision: '12/08/2026',
+    fechaISO: '2026-08-12',
+    referenciaPacto: 'MC-BAN-2026-0812',
+    montoBs: 34100000.0,
+    tasaBcv: 707.7,
+    montoUSD: 48184.26,
+    quintales: 215,
+    origenFondosDetalle: 'Enlazado con los 14 créditos inmediatos 0172 Bancamiga de COMERCIALIZADORA RJK (J-50099756-6 Bs. 63.750.000,00).',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Lote Mayorista 2 Agosto (Contrato RJK)',
+      215,
+      'café arábica',
+      34100000.0,
+      48184.26
+    ),
+    proveedorLiquidador: 'Productores Cafetaleros y Acopiadores para Despacho a RJK J-50099756-6',
+  },
+  {
+    seq: 28,
+    mes: 'Ago',
+    fechaEmision: '20/08/2026',
+    fechaISO: '2026-08-20',
+    referenciaPacto: 'MC-BAN-2026-0820',
+    montoBs: 33600000.0,
+    tasaBcv: 707.7,
+    montoUSD: 47477.74,
+    quintales: 212,
+    origenFondosDetalle: 'Enlazado con Anticipos Banesco del 18/08 (#03617709003 Bs. 43,75M) y 20/08/2026 (#03617953324 Bs. 45,00M).',
+    destinoFondosEnBolivaresYDivisas: buildFxReceiptDestinationText(
+      'Lote Mayorista 3 Agosto',
+      212,
+      'café verde pergamino',
+      33600000.0,
+      47477.74
+    ),
+    proveedorLiquidador: 'Centros de Acopio Rubio, Santa Cruz de Mora y Ospino (RUNSAI)',
+  },
+  {
+    seq: 29,
     mes: 'Ago',
     fechaEmision: '31/08/2026',
     fechaISO: '2026-08-31',
-    conceptoGeneral:
-      'Compra Mayorista de Divisas en Mesa de Cambio Banesco (Agosto 2026) por Bs. 142.900.000,00 vinculada a los Anticipos de BNC (J-50120729-0), RJK (J-50099756-6) y BDV (J-50809452-2).',
-    contraparteNombre: 'BANESCO BANCO UNIVERSAL, C.A. (Mesa de Cambio BCV)',
-    contraparteRifOCedula: 'J-07013380-5 / Titular: J-50145638-0',
-    bancoContraparte: '0134 - Banesco Banco Universal',
-    numeroCuentaContraparte: '0134-9801-11-0004819201 (Cta. Custodia Divisas USD Agrícola Oni)',
-    cuentaBanescoOni: '0134-0342-18-3421089912',
-    referenciaBancariaBanesco: 'MC-BAN-2026-0806 / 0812 / 0820 / 0831 (Lotes Agosto 2026)',
-    montoOperacionBs: 142900000.0,
-    tasaBcvAplicada: 707.7,
-    montoEquivalenteUSD: 201920.34,
-    lineasAsientoContable: [
-      {
-        codigoCuenta: '1.1.01.03',
-        nombreCuenta: 'Banesco Cuenta Custodia Divisas USD / Café en Tránsito Internacional',
-        referenciaAuxiliar: 'Pactos Mesa de Cambio Ago-2026 (US$ 201.920,34)',
-        debeBs: 142900000.0,
-        haberBs: 0,
-        debeUSD: 201920.34,
-        haberUSD: 0,
-      },
-      {
-        codigoCuenta: '1.1.01.02',
-        nombreCuenta: 'Banesco Banco Universal - Cta. Cte. 0134-0342-18-3421089912 (VES)',
-        referenciaAuxiliar: 'Cargo Liquidación Mesa de Cambio Ago-2026',
-        debeBs: 0,
-        haberBs: 142900000.0,
-        debeUSD: 0,
-        haberUSD: 201920.34,
-      },
-    ],
-    trazabilidadOrigenFondos:
-      'Enlazado con los abonos SGLBTR 0191 de J-50120729-0 (Bs. 84,9M), 14 lotes Bancamiga de RJK J-50099756-6 (Bs. 63,75M) y SGLBTR BDV de J-50809452-2 (Bs. 126,2M).',
-    trazabilidadDestinoFondos:
-      'Cierre acumulado Ene-Ago 2026 de Compra de Divisas Banesco e Importación Café = Bs. 375.630.000,00 (US$ 556.890,45).',
-    baseLegalAntidelitosCambiarios:
-      'Expediente integral de Mesa de Cambio Banesco que demuestra que el 100% de las divisas adquiridas se destinó a procura de materia prima cafetalera y flete.',
-    requisitosSeniatSudebanVerificados: [
-      'Cuadre exacto con columna Agosto 2026 (Bs. 142.900.000,00) y Total Categoría 2 (Bs. 375.630.000,00 / US$ 556.890,45).',
-    ],
-    estadoFirmaSello: 'EMITIDO_PENDIENTE_FIRMA',
-    expedienteSeniatNro: 'EXP-SENIAT-ONI-2026-FX-007',
+    referenciaPacto: 'MC-BAN-2026-0831',
+    montoBs: 36800000.0,
+    tasaBcv: 707.7,
+    montoUSD: 51998.06,
+    quintales: 233,
+    origenFondosDetalle: 'Enlazado con SGLBTR 0102 BDV de J-50809452-2 y J-50059079-2 del 28-31/08/2026 (Refs. #00041934646 y #00042467191 por Bs. 126,20M).',
+    destinoFondosEnBolivaresYDivisas:
+      'Cierre Agosto (Contratos BDV): liquidación de 233 quintales de café verde (82,25%: Bs. 30.268.000,00 / US$ 42.768,53), fletes terrestres e INSAI (11,50%: Bs. 4.232.000,00 / US$ 5.979,77), trilla/silos (6,00%: Bs. 2.208.000,00 / US$ 3.119,88) y comisión bancaria BCV 0,25% (Bs. 92.000,00 / US$ 129,88). IGTF en Bolívares: 0% (Bs. 0,00) s/Decreto N° 4.972 (G.O.E. N° 6.821 del 12/07/2024).',
+    proveedorLiquidador: 'Exportadora Cafetera del Norte S.A.S. / Cierre Acumulado US$ 556.890,45',
   },
 ];
+
+export const COMPROBANTES_COMPRAS_DOLARES_BANESCO_2026: OfficialAccountingVoucher[] =
+  RAW_FX_RECEIPTS_SEEDS_2026.map((seed) => {
+    const padded = String(seed.seq).padStart(3, '0');
+    return {
+      id: `vch-fx-${padded}`,
+      numeroComprobante: `COMP-FX-BAN-2026-${padded}`,
+      hojaDestino: 'COMPRAS_DOLARES_BANESCO',
+      subTipo: 'COMPRA_DIVISAS_MESA_CAMBIO',
+      naturalezaFlujo: 'SALIDA_BANESCO',
+      mes: seed.mes,
+      fechaEmision: seed.fechaEmision,
+      fechaISO: seed.fechaISO,
+      conceptoGeneral: `Recibo N° ${padded}/029 de Compra y Liquidación de Divisas en Mesa de Cambio Banesco (${seed.referenciaPacto} — ${seed.fechaEmision}) por US$ ${seed.montoUSD.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (Bs. ${seed.montoBs.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}) aplicado a la procura y logística de ${seed.quintales} quintales de Café Verde.`,
+      contraparteNombre: `BANESCO MESA DE CAMBIO BCV → ${seed.proveedorLiquidador}`,
+      contraparteRifOCedula: 'J-07013380-5 (Banesco) / Titular: J-50145638-0',
+      bancoContraparte: '0134 - Banesco Banco Universal (Mesa de Cambio BCV)',
+      numeroCuentaContraparte: '0134-9801-11-0004819201 (Cta. Custodia Divisas USD Agrícola Oni)',
+      cuentaBanescoOni: '0134-0342-18-3421089912',
+      referenciaBancariaBanesco: `${seed.referenciaPacto} (Lote ${seed.quintales} QQ Café)`,
+      montoOperacionBs: seed.montoBs,
+      tasaBcvAplicada: seed.tasaBcv,
+      montoEquivalenteUSD: seed.montoUSD,
+      lineasAsientoContable: [
+        {
+          codigoCuenta: '1.1.01.03',
+          nombreCuenta:
+            'Banesco Cuenta Custodia Divisas USD / Anticipos Procura y Logística Café',
+          referenciaAuxiliar: `Pacto ${seed.referenciaPacto} (${seed.quintales} QQ Café Verde)`,
+          debeBs: seed.montoBs,
+          haberBs: 0,
+          debeUSD: seed.montoUSD,
+          haberUSD: 0,
+        },
+        {
+          codigoCuenta: '1.1.01.02',
+          nombreCuenta:
+            'Banesco Banco Universal - Cta. Cte. 0134-0342-18-3421089912 (VES)',
+          referenciaAuxiliar: `Cargo Liquidación ${seed.referenciaPacto}`,
+          debeBs: 0,
+          haberBs: seed.montoBs,
+          debeUSD: 0,
+          haberUSD: seed.montoUSD,
+        },
+      ],
+      trazabilidadOrigenFondos: seed.origenFondosDetalle,
+      trazabilidadDestinoFondos: seed.destinoFondosEnBolivaresYDivisas,
+      baseLegalAntidelitosCambiarios:
+        'Operación pactada al tipo de cambio oficial del BCV a través de operador cambiario autorizado (Banesco), en estricto apego al Convenio Cambiario N° 1, G.O.E. N° 6.396 (Derogatoria de Ilícitos Cambiarios), Resolución SUDEBAN 083.18 y Decreto N° 4.972 (G.O.E. N° 6.821 del 12/07/2024: Alícuota 0% IGTF en Bolívares; 3% vigente sólo para pagos en divisas a SPE).',
+      requisitosSeniatSudebanVerificados: [
+        `Recibo Oficial Individual N° COMP-FX-BAN-2026-${padded} (${seed.referenciaPacto}).`,
+        `Destino justificado: ${seed.quintales} quintales de café verde (82,25%), flete terrestre (11,50%), trilla (6,00%) y comisión BCV (0,25%).`,
+        'Exoneración / Alícuota 0% de IGTF en Bolívares verificada según Decreto N° 4.972 (G.O.E. N° 6.821 del 12/07/2024).',
+      ],
+      estadoFirmaSello: 'EMITIDO_PENDIENTE_FIRMA',
+      expedienteSeniatNro: `EXP-SENIAT-ONI-2026-FX-${padded}`,
+    };
+  });
+
 
 // ============================================================================
 // 4. COMPROBANTES RESTANTES DE INGRESOS Y EGRESOS BANESCO (HOJA APARTE N° 4)
@@ -2516,7 +3091,7 @@ export const COMPROBANTES_RESTANTES_INGRESOS_EGRESOS_2026: OfficialAccountingVou
     expedienteSeniatNro: 'EXP-SENIAT-ONI-2026-CAM-001',
   },
 
-  // --- R6. EGRESOS POR COMISIONES BANCARIAS BANESCO E IMPUESTO IGTF (Bs. 26.751.113,95 / US$ 39.618,42) ---
+  // --- R6. EGRESOS POR COMISIONES BANCARIAS BANESCO E IGTF DIVISAS 3% (IGTF EN BS. 0% S/DECRETO 4.972) (Bs. 26.751.113,95 / US$ 39.618,42) ---
   {
     id: 'vch-rest-com-01',
     numeroComprobante: 'COMP-EGR-COM-2026-001',
@@ -2527,8 +3102,8 @@ export const COMPROBANTES_RESTANTES_INGRESOS_EGRESOS_2026: OfficialAccountingVou
     fechaEmision: '31/08/2026',
     fechaISO: '2026-08-31',
     conceptoGeneral:
-      'Comisiones Bancarias Banesco (COM. TRF. MB / COM. PAGO MOVIL CCE / SGLBTR) e Impuesto a las Grandes Transacciones Financieras (IGTF) — Consolidado Enero a Agosto 2026.',
-    contraparteNombre: 'BANESCO BANCO UNIVERSAL, C.A. / SENIAT (Percepción y Retención IGTF)',
+      'Comisiones Bancarias Banesco (COM. TRF. MB / COM. PAGO MOVIL CCE / SGLBTR) y Percepción IGTF 3% en Operaciones en Divisas (Operaciones en Bolívares al 0% s/Decreto N° 4.972 G.O.E. N° 6.821) — Consolidado Enero a Agosto 2026.',
+    contraparteNombre: 'BANESCO BANCO UNIVERSAL, C.A. / SENIAT (Comisiones Bancarias e IGTF Divisas 3%)',
     contraparteRifOCedula: 'J-07013380-5 (Banesco) / G-20000303-0 (SENIAT)',
     bancoContraparte: '0134 - Banesco Banco Universal (Débitos Automáticos)',
     numeroCuentaContraparte: 'Débito Automático en Cuenta Corriente Banesco',
@@ -2541,8 +3116,8 @@ export const COMPROBANTES_RESTANTES_INGRESOS_EGRESOS_2026: OfficialAccountingVou
     lineasAsientoContable: [
       {
         codigoCuenta: '5.3.01.01',
-        nombreCuenta: 'Gastos Financieros por Comisiones Bancarias Banesco y Tributos IGTF',
-        referenciaAuxiliar: 'Débitos Automáticos Banesco Ene-Ago 2026',
+        nombreCuenta: 'Gastos Financieros por Comisiones Bancarias Banesco e IGTF Divisas (3%)',
+        referenciaAuxiliar: 'Débitos Automáticos Banesco Ene-Ago 2026 (IGTF Bs. = 0% Decreto 4.972)',
         debeBs: 26751113.95,
         haberBs: 0,
         debeUSD: 39618.42,
@@ -2551,7 +3126,7 @@ export const COMPROBANTES_RESTANTES_INGRESOS_EGRESOS_2026: OfficialAccountingVou
       {
         codigoCuenta: '1.1.01.02',
         nombreCuenta: 'Banesco Banco Universal - Cta. Cte. 0134-0342-18-3421089912 (VES)',
-        referenciaAuxiliar: 'Cargos COM. TRF. MB / COM. PAGO MOVIL CCE / IGTF',
+        referenciaAuxiliar: 'Cargos COM. TRF. MB / COM. PAGO MOVIL CCE / SGLBTR',
         debeBs: 0,
         haberBs: 26751113.95,
         debeUSD: 0,
@@ -2561,12 +3136,13 @@ export const COMPROBANTES_RESTANTES_INGRESOS_EGRESOS_2026: OfficialAccountingVou
     trazabilidadOrigenFondos:
       'Débitos automáticos efectuados por Banesco Banco Universal sobre la cuenta corriente 0134-0342-18-3421089912.',
     trazabilidadDestinoFondos:
-      'Comisiones por transferencias interbancarias (COM. TRF. MB), comisiones por Pago Móvil CCE, comisiones SGLBTR y alícuota de IGTF.',
+      'Comisiones por transferencias interbancarias (COM. TRF. MB), Pago Móvil CCE, liquidación SGLBTR Alto Valor y percepción de IGTF 3% exclusivamente sobre operaciones en divisas (las operaciones en Bolívares tienen alícuota 0% según Decreto N° 4.972 publicado en G.O.E. N° 6.821 del 12/07/2024).',
     baseLegalAntidelitosCambiarios:
-      'El estado de cuenta bancario oficial emitido por Banesco funge como documento equivalente a factura para las comisiones bancarias conforme a la Providencia SENIAT SNAT/2011/0071.',
+      'El estado de cuenta bancario oficial emitido por Banesco funge como documento equivalente a factura para las comisiones bancarias conforme a la Providencia SENIAT SNAT/2011/0071. Cumplimiento del Decreto N° 4.972 (G.O.E. N° 6.821 del 12/07/2024) que redujo del 2% al 0% la alícuota de IGTF en Bolívares.',
     requisitosSeniatSudebanVerificados: [
       'Cuadre exacto al céntimo con Salidas Categoría 7 (Ene-Ago 2026): Bs. 26.751.113,95 (US$ 39.618,42).',
-      'Separación auxiliar para conciliación de la Renta Neta Fiscal ISLR.',
+      'Verificación de Alícuota 0% IGTF en Bolívares (Decreto N° 4.972, G.O.E. N° 6.821 del 12/07/2024) y 3% vigente sólo para pagos en divisas a Sujetos Pasivos Especiales.',
+      'Separación auxiliar para conciliación de la Renta Neta Fiscal ISLR (No deducibilidad del IGTF 3% según Art. 19 Ley IGTF; 100% deducibilidad de comisiones bancarias Banesco).',
     ],
     estadoFirmaSello: 'EMITIDO_PENDIENTE_FIRMA',
     expedienteSeniatNro: 'EXP-SENIAT-ONI-2026-COM-001',

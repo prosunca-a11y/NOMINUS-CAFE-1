@@ -152,7 +152,7 @@ De igual forma, certificamos ante Banesco Banco Universal que la totalidad de lo
    Bs. 153.210.000,00 (USD 226.910,30 — 7,83% de los egresos).
 5. Fletes Terrestres de Café, Almacenaje y Guías de Movilización INSAI/SICA (Cta. 5.1.02.04):
    Bs. 45.495.000,00 (USD 67.380,15 — 2,32% de los egresos).
-6. Comisiones Bancarias Banesco (MB, CCE, SGLBTR) e Impuesto IGTF (Cta. 5.3.01.01):
+6. Comisiones Bancarias Banesco (MB, CCE, SGLBTR) e IGTF Divisas 3% (IGTF en Bs. 0% s/Decreto N° 4.972 G.O.E. 6.821 — Cta. 5.3.01.01):
    Bs. 26.751.113,95 (USD 39.618,42 — 1,37% de los egresos).
 7. Gastos Operativos de Campo, Caleta y Nómina Rural de Vigilancia LOTTT vía Pago Móvil (Cta. 5.2.01.01):
    Bs. 12.904.000,00 (USD 19.412,80 — 0,66% de los egresos).
@@ -530,7 +530,7 @@ Contador Público en Ejercicio Independiente / Asesor Contable VEN-NIF
           <li><strong>Adquisición Lícita de Divisas en Mesa de Cambio e Intervención Cambiaria Banesco ("Cambiario / Compra $" — Cuenta 1.1.01.03):</strong> Se aplicaron <strong>Bs. 375.630.000,00 (USD 556.890,45 — 19,20% de los egresos en 23 operaciones oficiales)</strong> para la compra de divisas destinadas a la procura de insumos agrícolas, sacos de empaque agroindustrial, repuestos de maquinaria de trilla y cobertura de costos de reposición de inventario cafetalero bajo el Convenio Cambiario N° 1 del BCV.</li>
           <li><strong>Amortización de Línea de Crédito Rotativa "Crédito Becerra" (Cuenta 2.1.01.02):</strong> Se reembolsaron <strong>Bs. 181.400.000,00 (USD 278.450,00 — 9,27% de los egresos)</strong>, cancelando el 97,33% del financiamiento transitorio recibido.</li>
           <li><strong>Transferencias a Cuentas Propias de AGRÍCOLA ONI, C.A. en Otros Bancos (Cuenta 1.1.01.99):</strong> Se transfirieron <strong>Bs. 153.210.000,00 (USD 226.910,30 — 7,83% de los egresos)</strong> hacia nuestras cuentas propias en Mercantil, Provincial, Plaza y Bancamiga.</li>
-          <li><strong>Fletes Terrestres, Guías INSAI/SICA, Comisiones Bancarias/IGTF y Nómina Rural LOTTT:</strong> Se destinaron <strong>Bs. 45.495.000,00 (USD 67.380,15)</strong> a transporte pesado de cosecha y permisología INSAI/SICA; <strong>Bs. 26.751.113,95 (USD 39.618,42)</strong> a comisiones bancarias automáticas de Banesco e IGTF; y <strong>Bs. 12.904.000,00 (USD 19.412,80)</strong> a cuadrillas de caleta y vigilancia rural conforme a la LOTTT.</li>
+          <li><strong>Fletes Terrestres, Guías INSAI/SICA, Comisiones Bancarias/IGTF y Nómina Rural LOTTT:</strong> Se destinaron <strong>Bs. 45.495.000,00 (USD 67.380,15)</strong> a transporte pesado de cosecha y permisología INSAI/SICA; <strong>Bs. 26.751.113,95 (USD 39.618,42)</strong> a comisiones bancarias automáticas de Banesco e IGTF 3% en divisas (estando las operaciones en Bolívares al 0% según Decreto N° 4.972, G.O.E. N° 6.821 del 12/07/2024); y <strong>Bs. 12.904.000,00 (USD 19.412,80)</strong> a cuadrillas de caleta y vigilancia rural conforme a la LOTTT.</li>
         </ol>
 
         <h3>CUARTO: Soportes Documentales Consignados en Anexo</h3>
@@ -1795,7 +1795,7 @@ Contador Público en Ejercicio Independiente / Asesor Contable VEN-NIF
               <li>
                 <strong>Fletes Terrestres, Guías INSAI/SICA, Comisiones Bancarias/IGTF y Nómina Rural LOTTT:</strong>{' '}
                 Se destinaron <strong>Bs. 45.495.000,00 (USD 67.380,15)</strong> a transporte pesado de cosecha y permisología sanitaria INSAI/SICA;{' '}
-                <strong>Bs. 26.751.113,95 (USD 39.618,42)</strong> a comisiones bancarias automáticas de Banesco e Impuesto a las Grandes Transacciones Financieras (IGTF); y{' '}
+                <strong>Bs. 26.751.113,95 (USD 39.618,42)</strong> a comisiones bancarias automáticas de Banesco e IGTF 3% en divisas (con alícuota 0% para operaciones en Bolívares según Decreto N° 4.972, G.O.E. Extraordinaria N° 6.821 del 12/07/2024); y{' '}
                 <strong>Bs. 12.904.000,00 (USD 19.412,80)</strong> a cuadrillas de caleta y vigilancia rural conforme a la LOTTT.
               </li>
             </ol>
